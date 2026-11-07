@@ -20,6 +20,19 @@ export interface Project {
   year: string;
   url?: string;
   accent: string;
+  /** ISO date (YYYY-MM-DD) of the last meaningful content change; drives sitemap lastmod. */
+  updated?: string;
+  /** Client display name; omit if under NDA. */
+  client?: string;
+  /** Our role / scope on the engagement. */
+  role?: LocalizedText;
+  /** Delivery time, e.g. "4 months". */
+  duration?: LocalizedText;
+  /** Real, verifiable results only. Never invent numbers. */
+  metrics?: { value: string; label: LocalizedText }[];
+  /** Screenshots under /public/work/<slug>/, with localized alt text. */
+  images?: { src: string; width: number; height: number; alt: LocalizedText }[];
+  testimonial?: { quote: LocalizedText; name: string; role: LocalizedText };
 }
 
 /**

@@ -8,6 +8,7 @@ import { CTA } from "@/components/sections/cta";
 import { projects, getProject } from "@/data/projects";
 import { isLocale, type SiteLocale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
+import { JsonLdScript, breadcrumbJsonLd, caseStudyJsonLd } from "@/lib/jsonld";
 import { localizedMetadata } from "@/lib/seo";
 
 export function generateStaticParams() {
@@ -137,6 +138,22 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ loca
         <div className="h-16" />
       </article>
 
+      <JsonLdScript
+        data={[
+          breadcrumbJsonLd(locale, [
+            { name: dict.nav.work, path: "/work" },
+            { name: loc(project.title), path: `/work/${project.slug}` },
+          ]),
+          caseStudyJsonLd(locale, {
+            slug: project.slug,
+            name: loc(project.title),
+            description: loc(project.tagline),
+            year: project.year,
+            technologies: project.technologies,
+            url: project.url,
+          }),
+        ]}
+      />
       <CTA locale={locale} dict={dict} />
     </>
   );

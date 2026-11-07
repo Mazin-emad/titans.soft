@@ -4,9 +4,12 @@ import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
+import { Providers } from "@/components/providers";
+import { themeInitScript } from "@/lib/theme-script";
 import { Analytics } from "@/lib/analytics";
 import { isLocale, localeDirs, type SiteLocale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
+import { JsonLdScript, organizationJsonLd, websiteJsonLd } from "@/lib/jsonld";
 import { localizedMetadata } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
 
@@ -66,13 +69,19 @@ export default async function LocaleLayout({
       suppressHydrationWarning
       className={`${sans.variable} ${arabic.variable} ${mono.variable} h-full antialiased`}
     >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
       <body className="flex min-h-full flex-col overflow-x-hidden">
-        <Navbar locale={locale} dict={dict} />
-        <main id="main" className="flex-1 pt-16">
-          {children}
-        </main>
-        <Footer locale={locale} dict={dict} />
+        <Providers>
+          <Navbar locale={locale} dict={dict} />
+          <main id="main" className="flex-1 pt-16">
+            {children}
+          </main>
+          <Footer locale={locale} dict={dict} />
+        </Providers>
         <Analytics />
+        <JsonLdScript data={[organizationJsonLd(locale), websiteJsonLd(locale)]} />
       </body>
     </html>
   );
