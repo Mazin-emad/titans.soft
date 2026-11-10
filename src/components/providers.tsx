@@ -1,10 +1,9 @@
 "use client";
 
+import { createContext, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useState, type ReactNode } from "react";
 import { THEME_STORAGE_KEY } from "@/lib/theme-script";
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 
 export type Theme = "light" | "dark" | "system";
-const STORAGE_KEY = THEME_STORAGE_KEY;
 
 interface ThemeContextValue {
   theme: Theme;
@@ -13,6 +12,14 @@ interface ThemeContextValue {
 }
 
 const ThemeContext = createContext<ThemeContextValue | null>(null);
+
+function readStored(): Theme {
+  try {
+    const v = localStorage.getItem(THEME_STORAGE_KEY);
+    if (v === "light" || v === "dark" || v === "system") return v;
+  } catch {}
+  return "light";
+}
 
 function resolve(t: Theme): "light" | "dark" {
   if (t === "system") return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
@@ -26,20 +33,17 @@ function apply(t: Theme) {
 }
 
 export function Providers({ children }: { children: ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>("dark");
+  const [theme, setThemeState] = useState<Theme>("light");
 
-  // Sync with what the head script already applied (runs once after hydration).
-  useEffect(() => {
-    let saved: Theme = "dark";
-    try {
-      const v = localStorage.getItem(STORAGE_KEY);
-      if (v === "light" || v === "dark" || v === "system") saved = v;
-    } catch {}
+  // The inline <head> script applies the theme before paint. In development, Strict
+  // Mode's remount resets <html> attributes, so re-apply before paint (no-op in prod).
+  useLayoutEffect(() => {
+    const saved = readStored();
+    apply(saved);
     const id = requestAnimationFrame(() => setThemeState(saved));
     return () => cancelAnimationFrame(id);
   }, []);
 
-  // Follow OS changes while in "system" mode.
   useEffect(() => {
     if (theme !== "system") return;
     const mq = window.matchMedia("(prefers-color-scheme: dark)");
@@ -51,13 +55,13 @@ export function Providers({ children }: { children: ReactNode }) {
   const setTheme = useCallback((t: Theme) => {
     setThemeState(t);
     try {
-      localStorage.setItem(STORAGE_KEY, t);
+      localStorage.setItem(THEME_STORAGE_KEY, t);
     } catch {}
     apply(t);
   }, []);
 
   const value = useMemo<ThemeContextValue>(
-    () => ({ theme, setTheme, resolvedTheme: theme === "light" ? "light" : "dark" }),
+    () => ({ theme, setTheme, resolvedTheme: theme === "dark" ? "dark" : "light" }),
     [theme, setTheme],
   );
 

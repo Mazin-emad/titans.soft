@@ -1,42 +1,45 @@
 import type { MetadataRoute } from "next";
-import { siteConfig } from "@/lib/site";
 import { projects } from "@/data/projects";
+import { services } from "@/data/services";
+import { siteConfig } from "@/lib/site";
 
 /**
  * Bump when site-wide content changes meaningfully. A fixed date is deliberate:
- * stamping `new Date()` on every build tells crawlers everything changed daily,
- * which erodes trust in lastmod.
+ * stamping `new Date()` on every build tells crawlers everything changed daily.
  */
-const SITE_UPDATED = "2026-11-07";
+const SITE_UPDATED = "2026-11-10";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const base = siteConfig.url.replace(/\/$/, "");
-  const routes = ["", "/work", "/services", "/solutions", "/about", "/contact"];
 
-  const alternates = (path: string) => ({
-    languages: Object.fromEntries(siteConfig.locales.map((l) => [l, `${base}/${l}${path}`])),
+  const pages: { path: string; priority: number; freq: "weekly" | "monthly"; updated?: string }[] = [
+    { path: "", priority: 1, freq: "weekly" },
+    { path: "/services", priority: 0.9, freq: "monthly" },
+    ...services.map((s) => ({ path: `/services/${s.slug}`, priority: 0.9, freq: "monthly" as const })),
+    { path: "/work", priority: 0.8, freq: "weekly" },
+    // Sample case studies are noindex — keep them out of the sitemap too.
+    ...projects
+      .filter((p) => !p.placeholder)
+      .map((p) => ({ path: `/work/${p.slug}`, priority: 0.7, freq: "monthly" as const, updated: p.updated })),
+    { path: "/solutions", priority: 0.7, freq: "monthly" },
+    { path: "/about", priority: 0.6, freq: "monthly" },
+    { path: "/contact", priority: 0.6, freq: "monthly" },
+  ];
+
+  const languages = (path: string) => ({
+    languages: {
+      ...Object.fromEntries(siteConfig.locales.map((l) => [l, `${base}/${l}${path}`])),
+      "x-default": `${base}/en${path}`,
+    },
   });
 
-  const entries: MetadataRoute.Sitemap = [];
-  for (const locale of siteConfig.locales) {
-    for (const route of routes) {
-      entries.push({
-        url: `${base}/${locale}${route}`,
-        lastModified: SITE_UPDATED,
-        changeFrequency: route === "" ? "weekly" : "monthly",
-        priority: route === "" ? 1 : route === "/work" ? 0.9 : 0.7,
-        alternates: alternates(route),
-      });
-    }
-    for (const p of projects) {
-      entries.push({
-        url: `${base}/${locale}/work/${p.slug}`,
-        lastModified: p.updated ?? SITE_UPDATED,
-        changeFrequency: "monthly",
-        priority: 0.6,
-        alternates: alternates(`/work/${p.slug}`),
-      });
-    }
-  }
-  return entries;
+  return siteConfig.locales.flatMap((locale) =>
+    pages.map((p) => ({
+      url: `${base}/${locale}${p.path}`,
+      lastModified: p.updated ?? SITE_UPDATED,
+      changeFrequency: p.freq,
+      priority: p.priority,
+      alternates: languages(p.path),
+    })),
+  );
 }

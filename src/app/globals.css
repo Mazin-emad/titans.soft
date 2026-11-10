@@ -2,247 +2,319 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* ------------------------------------------------------------------ */
-/*  Titans.Soft design tokens (shadcn-style CSS variables)             */
-/*  Vercel Enterprise-inspired: neutral foundation, minimal accent.    */
-/* ------------------------------------------------------------------ */
+/* ==================================================================== */
+/*  Titans.Soft — "Monumental editorial"                                */
+/*  Limestone paper · warm ink · saffron. One accent, used with intent. */
+/* ==================================================================== */
 
 :root {
-  --radius: 0.625rem;
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --paper: #f4f2ed;
+  --paper-alt: #eae7df;
+  --surface: #fbfaf7;
+  --ink: #141310;
+  --ink-soft: #3b3934;
+  --muted: #6b675d;
+  --rule: #d8d3c8;
+  --rule-strong: #141310;
 
-  --background: #fafafa;
-  --foreground: #0a0a0a;
+  --accent: #f2b705; /* saffron */
+  --accent-ink: #855c00; /* accent as text on paper (AA) */
+  --on-accent: #141310;
+  --danger: #b42318;
+  --success: #2f6b3a;
 
-  --card: #ffffff;
-  --card-foreground: #0a0a0a;
-
-  --popover: #ffffff;
-  --popover-foreground: #0a0a0a;
-
-  --primary: #0a0a0a;
-  --primary-foreground: #fafafa;
-
-  --secondary: #f4f4f5;
-  --secondary-foreground: #18181b;
-
-  --muted: #f4f4f5;
-  --muted-foreground: #52525b;
-
-  --accent: #f4f4f5;
-  --accent-foreground: #18181b;
-
-  --destructive: #dc2626;
-  --destructive-foreground: #fafafa;
-
-  --border: #e4e4e7;
-  --input: #e4e4e7;
-  --ring: #0a0a0a;
-
-  /* Titans brand accent — restrained technical blue from the TS mark */
-  --brand: #0284c7;
-  --brand-foreground: #ffffff;
-  --brand-soft: #e0f2fe;
-
-  --code-bg: #f4f4f5;
-  --grid-line: rgb(0 0 0 / 0.055);
-  --glow: rgb(2 132 199 / 0.12);
+  /* Isometric object faces */
+  --face-top: #fbfaf7;
+  --face-a: #e3dfd5;
+  --face-b: #cdc7ba;
+  --face-line: #141310;
 }
 
 .dark {
-  --background: #050505;
-  --foreground: #ededed;
+  --paper: #121110;
+  --paper-alt: #1a1916;
+  --surface: #1e1c18;
+  --ink: #f0ede6;
+  --ink-soft: #d0cbc1;
+  --muted: #9e998d;
+  --rule: #2e2b26;
+  --rule-strong: #f0ede6;
 
-  --card: #0a0a0a;
-  --card-foreground: #ededed;
+  --accent: #f5bf1e;
+  --accent-ink: #f5bf1e;
+  --on-accent: #141310;
+  --danger: #f97066;
+  --success: #7fbf8a;
 
-  --popover: #0a0a0a;
-  --popover-foreground: #ededed;
+  --face-top: #2a2823;
+  --face-a: #1f1d19;
+  --face-b: #161512;
+  --face-line: #8f897d;
+}
 
-  --primary: #ededed;
-  --primary-foreground: #0a0a0a;
-
-  --secondary: #131316;
-  --secondary-foreground: #e4e4e7;
-
-  --muted: #131316;
-  --muted-foreground: #a1a1aa;
-
-  --accent: #131316;
-  --accent-foreground: #e4e4e7;
-
-  --destructive: #f87171;
-  --destructive-foreground: #0a0a0a;
-
-  --border: #1f1f23;
-  --input: #27272a;
-  --ring: #d4d4d8;
-
-  --brand: #38bdf8;
-  --brand-foreground: #050505;
-  --brand-soft: rgb(56 189 248 / 0.1);
-
-  --code-bg: #0d0d0f;
-  --grid-line: rgb(255 255 255 / 0.06);
-  --glow: rgb(56 189 248 / 0.14);
+/* Typefaces (variables attached to <html> by next/font). Each language gets
+   its own display + text face; the other script falls back gracefully. */
+:root {
+  --ff-display: var(--font-archivo), var(--font-kufi), ui-sans-serif, system-ui, sans-serif;
+  --ff-body: var(--font-instrument), var(--font-plex-arabic), ui-sans-serif, system-ui, sans-serif;
+  --ff-mono: var(--font-plex-mono), var(--font-plex-arabic), ui-monospace, monospace;
+}
+html[lang="ar"] {
+  --ff-display: var(--font-kufi), var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+  --ff-body: var(--font-plex-arabic), var(--font-instrument), ui-sans-serif, system-ui, sans-serif;
+  --ff-mono: var(--font-plex-arabic), var(--font-plex-mono), ui-monospace, monospace;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
+  --color-paper: var(--paper);
+  --color-paper-alt: var(--paper-alt);
+  --color-surface: var(--surface);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
   --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
+  --color-rule: var(--rule);
+  --color-rule-strong: var(--rule-strong);
   --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive);
-  --color-border: var(--border);
-  --color-input: var(--input);
-  --color-ring: var(--ring);
-  --color-brand: var(--brand);
-  --color-brand-soft: var(--brand-soft);
+  --color-accent-ink: var(--accent-ink);
+  --color-on-accent: var(--on-accent);
+  --color-danger: var(--danger);
+  --color-success: var(--success);
 
-  --font-sans: var(--font-sans);
-  --font-arabic: var(--font-arabic);
-  --font-mono: var(--font-mono);
+  --font-sans: var(--ff-body);
+  --font-display: var(--ff-display);
+  --font-mono: var(--ff-mono);
 
-  --radius-lg: var(--radius);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-sm: calc(var(--radius) - 4px);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
 
-  --animate-grid-pan: grid-pan 22s linear infinite;
-  --animate-pulse-soft: pulse-soft 3.2s ease-in-out infinite;
-  --animate-dash: dash 2.8s linear infinite;
-
-  @keyframes grid-pan {
-    from { background-position: 0 0; }
-    to { background-position: 56px 56px; }
-  }
-  @keyframes pulse-soft {
-    0%, 100% { opacity: 0.5; }
-    50% { opacity: 1; }
-  }
-  @keyframes dash {
-    to { stroke-dashoffset: -24; }
+  --animate-pulse-dot: pulse-dot 2.4s ease-in-out infinite;
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.35; }
   }
 }
 
-/* ------------------------------------------------------------------ */
+/* -------------------------------------------------------------------- */
+/*  Base                                                                */
+/* -------------------------------------------------------------------- */
 
-* {
-  border-color: var(--border);
-}
+* { border-color: var(--rule); }
 
 html {
   scroll-behavior: smooth;
   text-size-adjust: 100%;
-}
-
-html[dir="rtl"] {
-  letter-spacing: 0 !important;
+  -webkit-tap-highlight-color: transparent;
+  scroll-padding-top: 5rem;
 }
 
 body {
-  background-color: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-sans), var(--font-arabic), ui-sans-serif, system-ui, sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--ff-body);
+  font-size: 17px;
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
-  overflow-x: hidden;
-  min-height: 100vh;
+  font-feature-settings: "ss01", "cv11";
+  overflow-x: clip;
+  min-height: 100dvh;
 }
 
-html[lang="ar"] body {
-  font-family: var(--font-arabic), var(--font-sans), ui-sans-serif, system-ui, sans-serif;
-  line-height: 1.9;
+/* Paper grain — a static, barely-there texture that kills the "flat UI" feel. */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  pointer-events: none;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .9 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+.dark body::after { opacity: 0.045; filter: invert(1); }
+
+p { text-wrap: pretty; }
+h1, h2, h3, h4 { text-wrap: balance; }
+
+/* Display type — Archivo pushed wide and heavy; Kufi in Arabic. */
+.display {
+  font-family: var(--ff-display);
+  font-weight: 800;
+  font-variation-settings: "wdth" 115;
+  letter-spacing: -0.035em;
+  line-height: 0.94;
+}
+.display-md {
+  font-family: var(--ff-display);
+  font-weight: 700;
+  font-variation-settings: "wdth" 108;
+  letter-spacing: -0.025em;
+  line-height: 1.02;
+}
+.heading {
+  font-family: var(--ff-display);
+  font-weight: 650;
+  font-variation-settings: "wdth" 100;
+  letter-spacing: -0.015em;
+  line-height: 1.15;
 }
 
-code, pre, kbd, samp {
-  font-family: var(--font-mono), ui-monospace, monospace;
+/* Small mono metadata labels. */
+.label {
+  font-family: var(--ff-mono);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  line-height: 1.4;
 }
 
-/* Focus visibility — keyboard accessibility */
+/* Arabic: no tracking, no uppercase, roomier lines, slightly larger text. */
+html[lang="ar"] body { font-size: 18px; line-height: 1.85; }
+html[lang="ar"] .display { letter-spacing: 0; line-height: 1.22; font-weight: 800; }
+html[lang="ar"] .display-md { letter-spacing: 0; line-height: 1.35; }
+html[lang="ar"] .heading { letter-spacing: 0; line-height: 1.5; }
+html[lang="ar"] .label { letter-spacing: 0; text-transform: none; font-size: 13px; }
+html[lang="ar"] [class*="tracking-"] { letter-spacing: 0 !important; }
+
+code, pre, kbd, samp, .mono { font-family: var(--ff-mono); }
+
 :focus-visible {
-  outline: 2px solid var(--brand);
+  outline: 2px solid var(--ink);
   outline-offset: 3px;
-  border-radius: 4px;
 }
 
-/* Selection */
-::selection {
-  background: var(--brand);
-  color: var(--brand-foreground);
+::selection { background: var(--accent); color: var(--on-accent); }
+
+* { scrollbar-width: thin; scrollbar-color: var(--rule) transparent; }
+
+/* -------------------------------------------------------------------- */
+/*  Editorial details                                                   */
+/* -------------------------------------------------------------------- */
+
+/* Marker highlight behind a word — the single loud gesture per heading. */
+.mark {
+  background: linear-gradient(var(--accent), var(--accent)) no-repeat 0 88% / 100% 0.42em;
+  padding-inline: 0.06em;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+html[lang="ar"] .mark { background-position: 0 68%; background-size: 100% 0.32em; }
+
+/* Animated underline for text links. */
+.link {
+  background: linear-gradient(currentColor, currentColor) no-repeat 0 100% / 0% 1px;
+  transition: background-size 0.4s var(--ease-out-expo);
+}
+html[dir="rtl"] .link { background-position: 100% 100%; }
+.link:hover, .link:focus-visible { background-size: 100% 1px; }
+
+/* 3D extruded type (footer wordmark). */
+.extrude {
+  text-shadow:
+    1px 1px 0 var(--accent), 2px 2px 0 var(--accent), 3px 3px 0 var(--accent),
+    4px 4px 0 var(--accent), 5px 5px 0 var(--accent), 6px 6px 0 var(--accent),
+    7px 7px 0 var(--accent), 8px 8px 0 var(--accent), 9px 9px 0 color-mix(in srgb, var(--accent) 80%, black),
+    10px 10px 0 color-mix(in srgb, var(--accent) 70%, black);
 }
 
-/* Technical grid backdrop */
-.bg-grid {
-  background-image:
-    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
-    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
-  background-size: 56px 56px;
-}
+/* -------------------------------------------------------------------- */
+/*  Isometric 3D primitives (true CSS 3D, depth-sorted by the browser)  */
+/* -------------------------------------------------------------------- */
 
-.bg-grid-fade {
-  mask-image: radial-gradient(ellipse 90% 70% at 50% 30%, black 35%, transparent 78%);
+.iso-scene { transform-style: preserve-3d; }
+.iso-box { position: absolute; transform-style: preserve-3d; }
+.iso-box > .face {
+  position: absolute;
+  border: 1px solid var(--face-line);
+  backface-visibility: visible;
 }
+.iso-box > .face-top { inset: 0; transform: translateZ(var(--h)); background: var(--top, var(--face-top)); }
+.iso-box > .face-bottom { inset: 0; background: var(--side-b, var(--face-b)); }
+.iso-box > .face-front { left: 0; top: 100%; width: 100%; height: var(--h); transform-origin: top; transform: rotateX(90deg); background: var(--side-a, var(--face-a)); }
+.iso-box > .face-back { left: 0; bottom: 100%; width: 100%; height: var(--h); transform-origin: bottom; transform: rotateX(-90deg); background: var(--side-a, var(--face-a)); }
+.iso-box > .face-right { top: 0; left: 100%; height: 100%; width: var(--h); transform-origin: left; transform: rotateY(-90deg); background: var(--side-b, var(--face-b)); }
+.iso-box > .face-left { top: 0; right: 100%; height: 100%; width: var(--h); transform-origin: right; transform: rotateY(90deg); background: var(--side-b, var(--face-b)); }
 
-.text-balance {
-  text-wrap: balance;
-}
-
-/* Thin enterprise divider */
-.rule-gradient {
-  background: linear-gradient(to right, transparent, var(--border) 18%, var(--border) 82%, transparent);
-  height: 1px;
-}
-
-/* Card hover lift — subtle, enterprise */
-.card-lift {
-  transition: transform 0.25s ease, border-color 0.25s ease, background-color 0.25s ease, box-shadow 0.25s ease;
-}
-.card-lift:hover {
-  transform: translateY(-2px);
-  border-color: color-mix(in srgb, var(--brand) 45%, var(--border));
-}
-
-/* Reveal on scroll (progressive enhancement; IO adds .is-visible) */
-.reveal {
-  opacity: 0;
-  transform: translateY(18px);
-  transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
-}
-.reveal.is-visible {
-  opacity: 1;
-  transform: none;
-}
-
-/* Reduced motion — never make the site feel slow */
-@media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
+/* Scroll-driven "explode": slabs drift apart as the hero scrolls away. */
+@keyframes iso-explode { to { transform: translateZ(calc(var(--z) + var(--spread, 0px))); } }
+@supports (animation-timeline: scroll()) {
+  .iso-explode {
+    animation: iso-explode linear both;
+    animation-timeline: scroll(root);
+    animation-range: 0 70vh;
   }
+}
+
+/* -------------------------------------------------------------------- */
+/*  Motion — scroll-driven reveals (zero JS)                            */
+/* -------------------------------------------------------------------- */
+
+@keyframes reveal-up {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes rule-draw {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+@supports (animation-timeline: view()) {
   .reveal {
-    opacity: 1;
-    transform: none;
-    transition: none;
+    animation: reveal-up linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 40%;
   }
-  *,
-  *::before,
-  *::after {
+  .rule-draw {
+    transform-origin: left;
+    animation: rule-draw linear both;
+    animation-timeline: view();
+    animation-range: cover 0% cover 20%;
+  }
+  html[dir="rtl"] .rule-draw { transform-origin: right; }
+}
+
+/* -------------------------------------------------------------------- */
+/*  Page transitions (React <ViewTransition>)                           */
+/* -------------------------------------------------------------------- */
+
+::view-transition { pointer-events: none; }
+@keyframes vt-out { to { opacity: 0; } }
+@keyframes vt-in { from { opacity: 0; transform: translateY(10px); } }
+::view-transition-old(.page-out) { animation: 120ms ease-in both vt-out; }
+::view-transition-new(.page-in) { animation: 360ms var(--ease-out-expo) 60ms both vt-in; }
+::view-transition-group(site-header) { animation: none; z-index: 100; }
+::view-transition-old(site-header) { display: none; }
+::view-transition-new(site-header) { animation: none; }
+::view-transition-group(.morph) { animation-duration: 480ms; animation-timing-function: var(--ease-out-expo); }
+
+/* -------------------------------------------------------------------- */
+/*  Disclosure (FAQ)                                                    */
+/* -------------------------------------------------------------------- */
+
+:root { interpolate-size: allow-keywords; }
+details > summary { list-style: none; cursor: pointer; }
+details > summary::-webkit-details-marker { display: none; }
+details::details-content {
+  block-size: 0;
+  overflow: hidden;
+  transition: block-size 0.45s var(--ease-out-expo), content-visibility 0.45s allow-discrete;
+}
+details[open]::details-content { block-size: auto; }
+
+/* -------------------------------------------------------------------- */
+/*  Reduced motion                                                      */
+/* -------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .reveal, .rule-draw, .iso-explode { animation: none !important; }
+  *, *::before, *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
-}
-
-/* Thin scrollbars */
-* {
-  scrollbar-width: thin;
-  scrollbar-color: var(--border) transparent;
+  ::view-transition-old(*), ::view-transition-new(*), ::view-transition-group(*) {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+  }
 }

@@ -1,35 +1,34 @@
-import { SectionHeading } from "@/components/ui/section-heading";
-import { Reveal } from "@/components/ui/reveal";
+import { Section, SectionHeader } from "@/components/ui/section";
 import { techGroups } from "@/data/technologies";
 import type { Dictionary } from "@/dictionaries/en";
+import { tl } from "@/lib/i18n/t";
 import type { SiteLocale } from "@/lib/site";
 
-export function Technologies({ locale, dict }: { locale: SiteLocale; dict: Dictionary }) {
+/** The stack as a spec sheet: category in the margin, tools set in mono with their purpose. */
+export function Technologies({ locale, dict, index = "06" }: { locale: SiteLocale; dict: Dictionary; index?: string }) {
   const t = dict.tech;
-  const loc = (v: { en: string; ar: string }) => (locale === "ar" ? v.ar : v.en);
-
   return (
-    <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24">
-      <SectionHeading eyebrow={t.eyebrow} title={t.title} body={t.body} />
-      <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {techGroups.map((g, i) => (
-          <Reveal key={g.slug} delay={(i % 3) * 80}>
-            <article className="h-full rounded-lg border border-border bg-card">
-              <h3 className="border-b border-border px-5 py-3.5 font-mono text-xs uppercase tracking-[0.18em] text-muted-foreground">
-                {loc(g.title)}
-              </h3>
-              <ul className="divide-y divide-border">
-                {g.items.map((item) => (
-                  <li key={item.name} className="flex items-baseline justify-between gap-4 px-5 py-3">
-                    <span className="font-mono text-[13px] font-medium text-foreground">{item.name}</span>
-                    <span className="text-right text-xs text-muted-foreground">{loc(item.note)}</span>
+    <Section labelledBy="tech-title">
+      <SectionHeader id="tech-title" index={index} label={t.eyebrow} title={t.title} body={t.body} />
+      <dl className="mt-14 border-t border-rule-strong">
+        {techGroups.map((g) => (
+          <div key={g.slug} className="reveal grid gap-4 border-b border-rule py-6 lg:grid-cols-12 lg:gap-8">
+            <dt className="heading text-lg lg:col-span-3">{tl(locale, g.title)}</dt>
+            <dd className="lg:col-span-9">
+              <ul className="grid gap-x-8 gap-y-3 sm:grid-cols-2 xl:grid-cols-3">
+                {g.items.map((it) => (
+                  <li key={it.name} className="flex flex-col">
+                    <span className="mono text-[15px] font-medium" dir="ltr">
+                      {it.name}
+                    </span>
+                    <span className="text-sm text-muted">{tl(locale, it.note)}</span>
                   </li>
                 ))}
               </ul>
-            </article>
-          </Reveal>
+            </dd>
+          </div>
         ))}
-      </div>
-    </section>
+      </dl>
+    </Section>
   );
 }

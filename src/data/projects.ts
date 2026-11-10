@@ -67,7 +67,7 @@ export const projects: Project[] = [
     outcome: null,
     technologies: ["Next.js", "TypeScript", ".NET", "PostgreSQL", "Flutter"],
     year: "2025",
-    accent: "#0284c7",
+    accent: "#F2B705",
   },
   {
     slug: "commerce-platform",
@@ -96,7 +96,7 @@ export const projects: Project[] = [
     outcome: null,
     technologies: ["Next.js", "Node.js", "PostgreSQL", "REST APIs"],
     year: "2025",
-    accent: "#0d9488",
+    accent: "#C4532D",
   },
   {
     slug: "learning-portal",
@@ -125,7 +125,7 @@ export const projects: Project[] = [
     outcome: null,
     technologies: ["React", "Node.js", "MongoDB", "Flutter"],
     year: "2024",
-    accent: "#7c3aed",
+    accent: "#5E6B34",
   },
   {
     slug: "clinic-operations",
@@ -154,7 +154,7 @@ export const projects: Project[] = [
     outcome: null,
     technologies: ["Angular", ".NET", "SQL Server"],
     year: "2024",
-    accent: "#dc2626",
+    accent: "#38424F",
   },
   {
     slug: "property-listings",
@@ -183,7 +183,7 @@ export const projects: Project[] = [
     outcome: null,
     technologies: ["Next.js", "PostgreSQL", "Flutter"],
     year: "2024",
-    accent: "#ca8a04",
+    accent: "#D8C9AC",
   },
   {
     slug: "business-command-center",
@@ -212,7 +212,7 @@ export const projects: Project[] = [
     outcome: null,
     technologies: ["Next.js", ".NET", "PostgreSQL", "Docker"],
     year: "2025",
-    accent: "#059669",
+    accent: "#1A1915",
   },
 ];
 

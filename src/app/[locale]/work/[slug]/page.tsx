@@ -1,160 +1,236 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ArrowUpRight, ExternalLink } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Reveal } from "@/components/ui/reveal";
+import type { ReactNode } from "react";
+import { PageTransition } from "@/components/layout/page-transition";
+import { projectNumber } from "@/components/portfolio/project-card";
+import { ProjectCover } from "@/components/portfolio/project-cover";
 import { CTA } from "@/components/sections/cta";
-import { projects, getProject } from "@/data/projects";
+import { Arrow } from "@/components/ui/arrow";
+import { Breadcrumbs } from "@/components/ui/breadcrumbs";
+import { Container } from "@/components/ui/section";
+import { getProject, projects } from "@/data/projects";
 import { isLocale, type SiteLocale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
-import { JsonLdScript, breadcrumbJsonLd, caseStudyJsonLd } from "@/lib/jsonld";
+import { tl } from "@/lib/i18n/t";
+import { JsonLdScript, caseStudyJsonLd } from "@/lib/jsonld";
 import { localizedMetadata } from "@/lib/seo";
+import { siteConfig } from "@/lib/site";
 
 export function generateStaticParams() {
-  return projects.flatMap((p) => [{ locale: "en", slug: p.slug }, { locale: "ar", slug: p.slug }]);
+  return siteConfig.locales.flatMap((locale) => projects.map((p) => ({ locale, slug: p.slug })));
 }
 
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ locale: string; slug: string }>;
-}): Promise<Metadata> {
+export const dynamicParams = false;
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string; slug: string }> }): Promise<Metadata> {
   const { locale, slug } = await params;
   const loc: SiteLocale = isLocale(locale) ? locale : "en";
-  const project = getProject(slug);
-  if (!project) return {};
-  const title = loc === "ar" ? project.title.ar : project.title.en;
-  const description = loc === "ar" ? project.tagline.ar : project.tagline.en;
-  return localizedMetadata({ locale: loc, title: `${title} — Titans.Soft`, description, path: `/work/${slug}` });
+  const p = getProject(slug);
+  if (!p) return {};
+  return localizedMetadata({
+    locale: loc,
+    title: tl(loc, p.title),
+    description: tl(loc, p.tagline),
+    path: `/work/${slug}`,
+    type: "article",
+    // Sample case studies stay out of Google until real client work replaces them.
+    noindex: p.placeholder,
+  });
+}
+
+/** One chapter of the case study: sticky label in the margin, prose on the right. */
+function Chapter({ n, label, children }: { n: string; label: string; children: ReactNode }) {
+  return (
+    <section className="reveal grid gap-4 border-t border-rule-strong py-10 lg:grid-cols-12 lg:gap-8 lg:py-14">
+      <h2 className="label text-muted lg:sticky lg:top-24 lg:col-span-3 lg:self-start">
+        <span className="text-ink">({n})</span> {label}
+      </h2>
+      <div className="text-xl leading-relaxed lg:col-span-8 lg:text-[1.375rem]">{children}</div>
+    </section>
+  );
 }
 
 export default async function CaseStudyPage({ params }: { params: Promise<{ locale: string; slug: string }> }) {
   const { locale, slug } = await params;
   if (!isLocale(locale)) notFound();
-  const project = getProject(slug);
-  if (!project) notFound();
+  const p = getProject(slug);
+  if (!p) notFound();
   const dict = await getDictionary(locale);
   const t = dict.work;
-  const loc = (v: { en: string; ar: string }) => (locale === "ar" ? v.ar : v.en);
-  const BackIcon = locale === "ar" ? ArrowUpRight : ArrowLeft;
+  const title = tl(locale, p.title);
+  const num = projectNumber(p);
+  const next = projects[num % projects.length];
 
-  const blocks = [
-    { label: t.overview, value: loc(project.description) },
-    { label: t.problem, value: loc(project.problem) },
-    { label: t.solution, value: loc(project.solution) },
-  ];
+  const meta = [
+    p.client ? { k: t.client, v: p.client } : null,
+    { k: t.industry, v: tl(locale, p.industry) },
+    { k: t.platform, v: p.platform },
+    { k: t.year, v: p.year },
+    p.role ? { k: t.role, v: tl(locale, p.role) } : null,
+    p.duration ? { k: t.duration, v: tl(locale, p.duration) } : null,
+    { k: t.stack, v: p.technologies.join(", ") },
+  ].filter((x): x is { k: string; v: string } => x !== null);
+
+  let ch = 0;
+  const chapter = () => String(++ch).padStart(2, "0");
 
   return (
-    <>
-      <article className="mx-auto max-w-6xl px-4 pt-14 sm:px-6 sm:pt-20">
-        <Reveal>
-          <Link
-            href={`/${locale}/work`}
-            className="inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
-          >
-            <BackIcon className="size-4 rtl:rotate-180" aria-hidden="true" />
-            {t.backToWork}
-          </Link>
-        </Reveal>
-
-        <div className="mt-6 grid gap-10 lg:grid-cols-[1.2fr_0.8fr]">
-          <Reveal>
-            <div className="flex flex-wrap gap-2">
-              <Badge>{loc(project.category)}</Badge>
-              <Badge variant="outline">{project.platform}</Badge>
-              {project.placeholder ? <Badge variant="brand">{t.placeholderNote}</Badge> : null}
+    <PageTransition>
+      <article>
+        <header className="pb-12 pt-24 sm:pt-28">
+          <Container>
+            <div className="flex items-center justify-between gap-4 border-b border-rule-strong pb-3">
+              <Breadcrumbs
+                locale={locale}
+                homeLabel={dict.breadcrumbs.home}
+                items={[
+                  { name: dict.nav.work, path: "/work" },
+                  { name: title, path: `/work/${p.slug}` },
+                ]}
+              />
+              <span className="label hidden text-muted sm:block">
+                {t.caseLabel} {String(num).padStart(2, "0")}
+                {p.placeholder ? <span className="text-accent-ink"> — {t.sampleBadge}</span> : null}
+              </span>
             </div>
-            <h1 className="mt-4 text-4xl font-semibold tracking-tight text-balance sm:text-5xl">{loc(project.title)}</h1>
-            <p className="mt-4 text-lg leading-relaxed text-muted-foreground">{loc(project.tagline)}</p>
+            <h1 className="display mt-10 max-w-[16ch] text-[clamp(2.6rem,7.4vw,7.25rem)]">{title}</h1>
+            <div className="mt-8 grid gap-8 lg:grid-cols-12">
+              <p className="text-xl text-ink-soft lg:col-span-7 lg:col-start-4 sm:text-2xl">{tl(locale, p.tagline)}</p>
+            </div>
+          </Container>
+        </header>
 
-            <dl className="mt-8 grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-border bg-border sm:grid-cols-4">
-              {[
-                { k: t.industry, v: loc(project.industry) },
-                { k: t.platform, v: project.platform },
-                { k: t.status, v: project.year },
-                { k: t.stack, v: project.technologies.slice(0, 2).join(" · ") },
-              ].map((row) => (
-                <div key={row.k} className="bg-background px-4 py-3">
-                  <dt className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground">{row.k}</dt>
-                  <dd className="mt-1 text-sm font-medium">{row.v}</dd>
+        <Container>
+          <ProjectCover
+            project={p}
+            caption={tl(locale, p.category)}
+            caseLabel={t.caseLabel}
+            index={num}
+            priority
+            captionDir={locale === "ar" ? "rtl" : "ltr"}
+            wide
+            className="aspect-[16/10] sm:aspect-[16/8]"
+          />
+
+          <dl className="mt-10 grid grid-cols-2 gap-x-8 border-t border-rule-strong sm:grid-cols-3 lg:grid-cols-[repeat(auto-fit,minmax(150px,1fr))]">
+            {meta.map((m) => (
+              <div key={m.k} className="border-b border-rule py-4">
+                <dt className="label text-muted">{m.k}</dt>
+                <dd className="mt-1 font-medium">{m.v}</dd>
+              </div>
+            ))}
+          </dl>
+
+          {p.placeholder ? (
+            <p className="mt-6 border-s-[3px] border-accent ps-4 text-[15px] text-ink-soft">{t.sampleNote}</p>
+          ) : null}
+
+          {p.metrics?.length ? (
+            <dl className="mt-16 grid gap-x-8 border-t border-rule-strong sm:grid-cols-2 lg:grid-cols-4">
+              {p.metrics.map((m) => (
+                <div key={m.value} className="border-b border-rule py-6">
+                  <dd className="display text-6xl" dir="ltr">
+                    {m.value}
+                  </dd>
+                  <dt className="mt-3 text-ink-soft">{tl(locale, m.label)}</dt>
                 </div>
               ))}
             </dl>
-          </Reveal>
+          ) : null}
 
-          <Reveal delay={120}>
-            <div className="relative overflow-hidden rounded-lg border border-border" aria-hidden="true">
-              <div className="bg-grid absolute inset-0" />
-              <div className="absolute inset-0" style={{ background: `radial-gradient(ellipse 80% 90% at 40% 20%, ${project.accent}2e, transparent 70%)` }} />
-              <div className="relative flex h-64 items-center justify-center">
-                <span className="font-mono text-7xl font-bold tracking-tighter text-foreground/10">
-                  {project.title.en.split(" ").map((w) => w[0]).slice(0, 2).join("")}
+          <div className="mt-20">
+            <Chapter n={chapter()} label={t.overview}>
+              <p>{tl(locale, p.description)}</p>
+            </Chapter>
+            <Chapter n={chapter()} label={t.challenge}>
+              <p>{tl(locale, p.problem)}</p>
+            </Chapter>
+            <Chapter n={chapter()} label={t.solution}>
+              <p>{tl(locale, p.solution)}</p>
+            </Chapter>
+
+            {p.images && p.images.length > 1 ? (
+              <Chapter n={chapter()} label={t.screens}>
+                <div className="grid gap-6 sm:grid-cols-2">
+                  {p.images.slice(1).map((img) => (
+                    <Image
+                      key={img.src}
+                      src={img.src}
+                      alt={tl(locale, img.alt)}
+                      width={img.width}
+                      height={img.height}
+                      sizes="(min-width: 1024px) 33vw, 90vw"
+                      className="h-auto w-full border border-rule"
+                    />
+                  ))}
+                </div>
+              </Chapter>
+            ) : null}
+
+            <Chapter n={chapter()} label={t.outcome}>
+              <p className={p.outcome ? undefined : "text-muted"}>{p.outcome ? tl(locale, p.outcome) : t.outcomePending}</p>
+            </Chapter>
+
+            {p.testimonial ? (
+              <Chapter n={chapter()} label={t.testimonial}>
+                <figure>
+                  <blockquote className="display-md text-[clamp(1.6rem,3vw,2.5rem)]">“{tl(locale, p.testimonial.quote)}”</blockquote>
+                  <figcaption className="mt-6 text-base text-ink-soft">
+                    <span className="font-semibold text-ink">{p.testimonial.name}</span> — {tl(locale, p.testimonial.role)}
+                  </figcaption>
+                </figure>
+              </Chapter>
+            ) : null}
+
+            <Chapter n={chapter()} label={t.stack}>
+              <ul className="flex flex-wrap gap-x-6 gap-y-2" dir="ltr">
+                {p.technologies.map((tech) => (
+                  <li key={tech} className="mono font-medium">
+                    {tech}
+                  </li>
+                ))}
+              </ul>
+              <p className="mt-6 text-base">
+                {p.url ? (
+                  <a href={p.url} target="_blank" rel="noopener noreferrer" className="link inline-flex items-center gap-2 font-medium">
+                    {t.liveProduct}
+                    <Arrow diagonal className="size-4" />
+                  </a>
+                ) : (
+                  <span className="text-muted">{t.noLiveUrl}</span>
+                )}
+              </p>
+            </Chapter>
+          </div>
+
+          {next && next.slug !== p.slug ? (
+            <Link href={`/${locale}/work/${next.slug}`} className="group mb-24 mt-8 block border-y border-rule-strong py-10 sm:mb-32">
+              <span className="label text-muted">{t.nextProject}</span>
+              <span className="mt-4 flex items-center justify-between gap-6">
+                <span className="display-md text-[clamp(2rem,5vw,4.5rem)] transition-[background-size] duration-500 ease-out-expo [background:linear-gradient(var(--accent),var(--accent))_no-repeat_0_88%/0%_0.35em] group-hover:[background-size:100%_0.35em]">
+                  {tl(locale, next.title)}
                 </span>
-              </div>
-              <div className="relative flex items-center justify-between border-t border-border bg-card px-5 py-3 font-mono text-xs text-muted-foreground">
-                <span>{project.technologies.join(" · ")}</span>
-              </div>
-            </div>
-            {project.url ? (
-              <a href={project.url} target="_blank" rel="noreferrer" className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-brand hover:underline">
-                <ExternalLink className="size-4" aria-hidden="true" />
-                {t.liveProduct}
-              </a>
-            ) : (
-              <p className="mt-4 font-mono text-xs text-muted-foreground">{t.noLiveUrl}</p>
-            )}
-          </Reveal>
-        </div>
+                <Arrow className="size-10 shrink-0 transition-transform duration-500 group-hover:translate-x-2 rtl:group-hover:-translate-x-2" />
+              </span>
+            </Link>
+          ) : null}
+        </Container>
 
-        <div className="mt-12 grid gap-4 lg:grid-cols-3">
-          {blocks.map((b, i) => (
-            <Reveal key={b.label} delay={i * 80}>
-              <section className="h-full rounded-lg border border-border bg-card p-6">
-                <h2 className="font-mono text-xs uppercase tracking-[0.18em] text-brand">{b.label}</h2>
-                <p className="mt-3 text-[15px] leading-relaxed text-foreground/90">{b.value}</p>
-              </section>
-            </Reveal>
-          ))}
-        </div>
-
-        <Reveal>
-          <section className="mt-4 rounded-lg border border-border bg-card p-6">
-            <h2 className="font-mono text-xs uppercase tracking-[0.18em] text-brand">{t.outcome}</h2>
-            <p className="mt-3 text-[15px] leading-relaxed text-foreground/90">
-              {project.outcome ? loc(project.outcome) : locale === "ar" ? "محتوى مؤقت: ستُضاف النتائج الحقيقية هنا عند توفر بيانات عميل فعلية." : "Placeholder: real outcomes will be added here when actual client data is available."}
-            </p>
-            <h3 className="mt-6 font-mono text-xs uppercase tracking-[0.18em] text-muted-foreground">{t.stack}</h3>
-            <ul className="mt-3 flex flex-wrap gap-1.5">
-              {project.technologies.map((tech) => (
-                <li key={tech} className="rounded-full border border-border bg-background px-3 py-1 font-mono text-xs text-muted-foreground">
-                  {tech}
-                </li>
-              ))}
-            </ul>
-          </section>
-        </Reveal>
-
-        <div className="h-16" />
+        <CTA locale={locale} dict={dict} />
+        <JsonLdScript
+          data={caseStudyJsonLd(locale, {
+            slug: p.slug,
+            name: title,
+            description: tl(locale, p.tagline),
+            year: p.year,
+            technologies: p.technologies,
+            url: p.url,
+            image: p.images?.[0]?.src,
+          })}
+        />
       </article>
-
-      <JsonLdScript
-        data={[
-          breadcrumbJsonLd(locale, [
-            { name: dict.nav.work, path: "/work" },
-            { name: loc(project.title), path: `/work/${project.slug}` },
-          ]),
-          caseStudyJsonLd(locale, {
-            slug: project.slug,
-            name: loc(project.title),
-            description: loc(project.tagline),
-            year: project.year,
-            technologies: project.technologies,
-            url: project.url,
-          }),
-        ]}
-      />
-      <CTA locale={locale} dict={dict} />
-    </>
+    </PageTransition>
   );
 }

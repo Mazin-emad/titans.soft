@@ -18,7 +18,10 @@ export default function proxy(req: NextRequest) {
   const maybeLocale = segments[1];
 
   if (maybeLocale === "" || maybeLocale === undefined) {
-    return NextResponse.redirect(new URL(`/${defaultLocale}`, req.url));
+    // Root: send Arabic-preferring browsers to /ar, everyone else to the default.
+    const accept = req.headers.get("accept-language")?.toLowerCase() ?? "";
+    const prefersArabic = /^\s*ar\b/.test(accept);
+    return NextResponse.redirect(new URL(`/${prefersArabic ? "ar" : defaultLocale}`, req.url));
   }
 
   if (!isLocale(maybeLocale)) {

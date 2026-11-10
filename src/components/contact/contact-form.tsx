@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, type FormEvent, type ChangeEvent } from "react";
-import { Send, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
+import { useState, type ChangeEvent, type FormEvent, type ReactNode } from "react";
+import { Arrow } from "@/components/ui/arrow";
 import { Button } from "@/components/ui/button";
-import { Input, Textarea, Label, FieldError } from "@/components/ui/field";
+import { ChoiceGroup, FieldError, Input, Label, Textarea } from "@/components/ui/field";
 import type { Dictionary } from "@/dictionaries/en";
 import type { SiteLocale } from "@/lib/site";
 
@@ -11,24 +11,28 @@ type Status = "idle" | "sending" | "success" | "error";
 
 const PROJECT_TYPES = ["web", "mobile", "desktop", "custom", "ecommerce", "saas", "ai", "other"] as const;
 const BUDGETS = ["small", "medium", "large", "enterprise", "undecided"] as const;
+const EMPTY = { name: "", company: "", email: "", phone: "", country: "", projectType: "", budget: "", message: "", website: "" };
+
+function Part({ n, title, children }: { n: string; title: string; children: ReactNode }) {
+  return (
+    <div className="grid gap-6 border-t border-rule-strong pt-6 lg:grid-cols-12 lg:gap-8">
+      <p className="label text-muted lg:col-span-3">
+        <span className="text-ink">({n})</span> {title}
+      </p>
+      <div className="grid gap-6 sm:grid-cols-2 lg:col-span-9">{children}</div>
+    </div>
+  );
+}
 
 export function ContactForm({ locale, dict }: { locale: SiteLocale; dict: Dictionary }) {
   const t = dict.contact.form;
+  const ar = locale === "ar";
   const [status, setStatus] = useState<Status>("idle");
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [values, setValues] = useState({
-    name: "",
-    company: "",
-    email: "",
-    phone: "",
-    country: "",
-    projectType: "",
-    budget: "",
-    message: "",
-  });
+  const [values, setValues] = useState(EMPTY);
 
-  const set = (key: keyof typeof values) => (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    setValues((v) => ({ ...v, [key]: e.target.value }));
+  const setValue = (key: keyof typeof values, v: string) => {
+    setValues((s) => ({ ...s, [key]: v }));
     setErrors((errs) => {
       if (!errs[key]) return errs;
       const next = { ...errs };
@@ -36,6 +40,10 @@ export function ContactForm({ locale, dict }: { locale: SiteLocale; dict: Dictio
       return next;
     });
   };
+  const bind = (key: keyof typeof values) => ({
+    value: values[key],
+    onChange: (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setValue(key, e.target.value),
+  });
 
   const validate = () => {
     const next: Record<string, string> = {};
@@ -44,13 +52,17 @@ export function ContactForm({ locale, dict }: { locale: SiteLocale; dict: Dictio
     if (!values.projectType) next.projectType = t.errors.projectType;
     if (values.message.trim().length < 10) next.message = t.errors.message;
     setErrors(next);
-    return Object.keys(next).length === 0;
+    const first = Object.keys(next)[0];
+    if (first) {
+      const el = first === "projectType" ? document.querySelector<HTMLInputElement>('input[name="projectType"]') : document.getElementById(`cf-${first}`);
+      el?.focus();
+    }
+    return !first;
   };
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (status === "sending") return;
-    if (!validate()) return;
+    if (status === "sending" || !validate()) return;
     setStatus("sending");
     try {
       const res = await fetch("/api/contact", {
@@ -67,91 +79,114 @@ export function ContactForm({ locale, dict }: { locale: SiteLocale; dict: Dictio
 
   if (status === "success") {
     return (
-      <div role="status" className="rounded-lg border border-border bg-card p-8 text-center">
-        <CheckCircle2 className="mx-auto size-10 text-emerald-500" aria-hidden="true" />
-        <h3 className="mt-4 text-xl font-semibold">{t.successTitle}</h3>
-        <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-muted-foreground">{t.successBody}</p>
-        <Button variant="outline" className="mt-6" onClick={() => { setStatus("idle"); setValues({ name: "", company: "", email: "", phone: "", country: "", projectType: "", budget: "", message: "" }); }}>
+      <div role="status" className="border-t border-rule-strong pt-10">
+        <p className="label text-muted">✓</p>
+        <h2 className="display-md mt-4 text-4xl">{t.successTitle}</h2>
+        <p className="mt-4 max-w-lg text-lg text-ink-soft">{t.successBody}</p>
+        <Button
+          variant="outline"
+          className="mt-8"
+          onClick={() => {
+            setStatus("idle");
+            setValues(EMPTY);
+          }}
+        >
           {t.sendAnother}
         </Button>
       </div>
     );
   }
 
-  const selectClass =
-    "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-2 focus-visible:outline-brand disabled:opacity-50";
+  const req = <span className="text-accent-ink"> *</span>;
 
   return (
-    <form onSubmit={onSubmit} noValidate className="rounded-lg border border-border bg-card p-6 sm:p-8" aria-label={dict.contact.title}>
-      <div className="grid gap-5 sm:grid-cols-2">
+    <form onSubmit={onSubmit} noValidate aria-label={dict.contact.title} className="space-y-12">
+      <Part n="01" title={ar ? "عنك" : "About you"}>
         <div>
-          <Label htmlFor="cf-name">{t.name} *</Label>
-          <Input id="cf-name" name="name" autoComplete="name" className="mt-2" placeholder={t.namePlaceholder} value={values.name} onChange={set("name")} aria-invalid={!!errors.name} aria-describedby={errors.name ? "cf-name-err" : undefined} />
+          <Label htmlFor="cf-name">
+            {t.name}
+            {req}
+          </Label>
+          <Input id="cf-name" name="name" autoComplete="name" required className="mt-2" placeholder={t.namePlaceholder} {...bind("name")} aria-invalid={!!errors.name} aria-describedby={errors.name ? "cf-name-err" : undefined} />
           <FieldError id="cf-name-err" message={errors.name} />
         </div>
         <div>
           <Label htmlFor="cf-company">{t.company}</Label>
-          <Input id="cf-company" name="company" autoComplete="organization" className="mt-2" placeholder={t.companyPlaceholder} value={values.company} onChange={set("company")} />
+          <Input id="cf-company" name="company" autoComplete="organization" className="mt-2" placeholder={t.companyPlaceholder} {...bind("company")} />
         </div>
         <div>
-          <Label htmlFor="cf-email">{t.email} *</Label>
-          <Input id="cf-email" name="email" type="email" autoComplete="email" dir="ltr" className="mt-2" placeholder={t.emailPlaceholder} value={values.email} onChange={set("email")} aria-invalid={!!errors.email} aria-describedby={errors.email ? "cf-email-err" : undefined} />
+          <Label htmlFor="cf-email">
+            {t.email}
+            {req}
+          </Label>
+          <Input id="cf-email" name="email" type="email" inputMode="email" autoComplete="email" required dir="ltr" className="mt-2 text-start" placeholder={t.emailPlaceholder} {...bind("email")} aria-invalid={!!errors.email} aria-describedby={errors.email ? "cf-email-err" : undefined} />
           <FieldError id="cf-email-err" message={errors.email} />
         </div>
         <div>
           <Label htmlFor="cf-phone">{t.phone}</Label>
-          <Input id="cf-phone" name="phone" type="tel" autoComplete="tel" dir="ltr" className="mt-2" placeholder={t.phonePlaceholder} value={values.phone} onChange={set("phone")} />
+          <Input id="cf-phone" name="phone" type="tel" inputMode="tel" autoComplete="tel" dir="ltr" className="mt-2 text-start" placeholder={t.phonePlaceholder} {...bind("phone")} />
         </div>
-        <div>
+        <div className="sm:col-span-2">
           <Label htmlFor="cf-country">{t.country}</Label>
-          <Input id="cf-country" name="country" autoComplete="country-name" className="mt-2" placeholder={t.countryPlaceholder} value={values.country} onChange={set("country")} />
+          <Input id="cf-country" name="country" autoComplete="country-name" className="mt-2" placeholder={t.countryPlaceholder} {...bind("country")} />
         </div>
-        <div>
-          <Label htmlFor="cf-type">{t.projectType} *</Label>
-          <select id="cf-type" value={values.projectType} onChange={set("projectType")} aria-invalid={!!errors.projectType} aria-describedby={errors.projectType ? "cf-type-err" : undefined} className={`${selectClass} mt-2`}>
-            <option value="">{t.projectTypePlaceholder}</option>
-            {PROJECT_TYPES.map((k) => (
-              <option key={k} value={k}>{t.types[k]}</option>
-            ))}
-          </select>
-          <FieldError id="cf-type-err" message={errors.projectType} />
+      </Part>
+
+      <Part n="02" title={ar ? "عن المشروع" : "About the project"}>
+        <div className="sm:col-span-2">
+          <ChoiceGroup
+            name="projectType"
+            legend={
+              <>
+                {t.projectType}
+                {req}
+              </>
+            }
+            options={PROJECT_TYPES.map((k) => ({ value: k, label: t.types[k] }))}
+            value={values.projectType}
+            onChange={(v) => setValue("projectType", v)}
+            required
+            error={errors.projectType}
+            errorId="cf-type-err"
+          />
         </div>
         <div className="sm:col-span-2">
-          <Label htmlFor="cf-budget">{t.budget}</Label>
-          <select id="cf-budget" value={values.budget} onChange={set("budget")} className={`${selectClass} mt-2`}>
-            <option value="">{t.budgetPlaceholder}</option>
-            {BUDGETS.map((k) => (
-              <option key={k} value={k}>{t.budgets[k]}</option>
-            ))}
-          </select>
+          <ChoiceGroup
+            name="budget"
+            legend={t.budget}
+            options={BUDGETS.map((k) => ({ value: k, label: t.budgets[k] }))}
+            value={values.budget}
+            onChange={(v) => setValue("budget", v)}
+          />
         </div>
         <div className="sm:col-span-2">
-          <Label htmlFor="cf-message">{t.message} *</Label>
-          <Textarea id="cf-message" name="message" rows={5} className="mt-2" placeholder={t.messagePlaceholder} value={values.message} onChange={set("message")} aria-invalid={!!errors.message} aria-describedby={errors.message ? "cf-message-err" : undefined} />
+          <Label htmlFor="cf-message">
+            {t.message}
+            {req}
+          </Label>
+          <Textarea id="cf-message" name="message" rows={6} required className="mt-2" placeholder={t.messagePlaceholder} {...bind("message")} aria-invalid={!!errors.message} aria-describedby={errors.message ? "cf-message-err" : undefined} />
           <FieldError id="cf-message-err" message={errors.message} />
         </div>
+        {/* Honeypot — invisible to people, tempting to bots. */}
+        <div className="hidden" aria-hidden="true">
+          <label htmlFor="cf-website">Website</label>
+          <input id="cf-website" name="website" tabIndex={-1} autoComplete="off" {...bind("website")} />
+        </div>
+      </Part>
+
+      <div className="grid gap-6 border-t border-rule-strong pt-6 lg:grid-cols-12 lg:gap-8">
+        <div className="lg:col-span-9 lg:col-start-4">
+          {status === "error" ? (
+            <p role="alert" className="mb-6 border-s-[3px] border-danger ps-4 text-[15px]">
+              <strong>{t.errorTitle}</strong> {t.errorBody}
+            </p>
+          ) : null}
+          <Button type="submit" size="lg" disabled={status === "sending"} className="w-full sm:w-auto">
+            {status === "sending" ? t.sending : t.submit}
+            {status === "sending" ? null : <Arrow />}
+          </Button>
+        </div>
       </div>
-
-      {status === "error" ? (
-        <p role="alert" className="mt-5 flex items-start gap-2 rounded-md border border-destructive/40 bg-destructive/5 p-3 text-sm">
-          <AlertCircle className="mt-0.5 size-4 shrink-0 text-destructive" aria-hidden="true" />
-          <span><strong>{t.errorTitle}</strong> {t.errorBody}</span>
-        </p>
-      ) : null}
-
-      <Button type="submit" size="lg" variant="brand" disabled={status === "sending"} className="mt-6 w-full sm:w-auto">
-        {status === "sending" ? (
-          <>
-            <Loader2 className="size-4 animate-spin" aria-hidden="true" />
-            {t.sending}
-          </>
-        ) : (
-          <>
-            <Send className="size-4 rtl:-scale-x-100" aria-hidden="true" />
-            {t.submit}
-          </>
-        )}
-      </Button>
     </form>
   );
 }

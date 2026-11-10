@@ -2,38 +2,35 @@
 
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { AlertTriangle, RotateCcw, Home } from "lucide-react";
+import { Arrow } from "@/components/ui/arrow";
 import { Button } from "@/components/ui/button";
+import { Container } from "@/components/ui/section";
+import ar from "@/dictionaries/ar";
+import en from "@/dictionaries/en";
 import { isLocale } from "@/lib/i18n/config";
 
 export default function LocaleError({ reset }: { error: Error & { digest?: string }; reset: () => void }) {
   const params = useParams();
   const raw = typeof params?.locale === "string" ? params.locale : "en";
   const locale = isLocale(raw) ? raw : "en";
-  const ar = locale === "ar";
+  const t = (locale === "ar" ? ar : en).errors;
 
   return (
-    <div className="mx-auto max-w-xl px-4 py-24 text-center sm:px-6">
-      <AlertTriangle className="mx-auto size-10 text-brand" aria-hidden="true" />
-      <p className="mt-6 font-mono text-xs uppercase tracking-[0.2em] text-muted-foreground">Error</p>
-      <h1 className="mt-3 text-3xl font-semibold tracking-tight">
-        {ar ? "حدث خطأ ما." : "Something went wrong."}
-      </h1>
-      <p className="mt-3 text-muted-foreground">
-        {ar ? "حدث خطأ غير متوقع. حاول مجددًا — وإذا استمر تواصل معنا مباشرة." : "An unexpected error occurred. Try again — and if it persists, contact us directly."}
-      </p>
-      <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-        <Button variant="brand" onClick={reset}>
-          <RotateCcw className="size-4" aria-hidden="true" />
-          {ar ? "حاول مجددًا" : "Try again"}
+    <Container className="pb-28 pt-24 sm:pt-28">
+      <p className="label border-b border-rule-strong pb-3 text-muted">Error</p>
+      <h1 className="display mt-10 max-w-[14ch] text-[clamp(2.6rem,7vw,6rem)]">{t.errorTitle}</h1>
+      <p className="mt-6 max-w-xl text-lg text-ink-soft">{t.errorBody}</p>
+      <div className="mt-9 flex flex-col gap-3 sm:flex-row">
+        <Button size="lg" onClick={reset}>
+          {t.errorRetry}
         </Button>
-        <Button variant="outline" asChild>
+        <Button asChild size="lg" variant="outline">
           <Link href={`/${locale}`}>
-            <Home className="size-4" aria-hidden="true" />
-            {ar ? "عودة للرئيسية" : "Back to home"}
+            {t.notFoundHome}
+            <Arrow />
           </Link>
         </Button>
       </div>
-    </div>
+    </Container>
   );
 }

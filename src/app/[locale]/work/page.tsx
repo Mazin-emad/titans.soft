@@ -1,52 +1,61 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { Badge } from "@/components/ui/badge";
-import { Reveal } from "@/components/ui/reveal";
+import { PageIntro } from "@/components/layout/page-intro";
+import { PageTransition } from "@/components/layout/page-transition";
 import { ProjectCard } from "@/components/portfolio/project-card";
+import { WorkFilter } from "@/components/portfolio/work-filter";
 import { CTA } from "@/components/sections/cta";
+import { Container } from "@/components/ui/section";
 import { projects } from "@/data/projects";
 import { isLocale, type SiteLocale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
+import { tl } from "@/lib/i18n/t";
+import { JsonLdScript, itemListJsonLd } from "@/lib/jsonld";
 import { localizedMetadata } from "@/lib/seo";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
   const loc: SiteLocale = isLocale(locale) ? locale : "en";
   const dict = await getDictionary(loc);
-  const title = loc === "ar" ? "أعمالنا — تايتنز سوفت" : "Work — Titans.Soft";
-  const description = dict.work.body;
-  return localizedMetadata({ locale: loc, title, description, path: "/work" });
+  return localizedMetadata({ locale: loc, title: dict.seo.work.title, description: dict.seo.work.description, path: "/work" });
 }
 
 export default async function WorkPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
   const dict = await getDictionary(locale);
+  const t = dict.work;
+  const categories = [...new Set(projects.map((p) => tl(locale, p.category)))];
+  const published = projects.filter((p) => !p.placeholder);
 
   return (
-    <>
-      <section className="relative overflow-hidden">
-        <div className="bg-grid bg-grid-fade absolute inset-0" aria-hidden="true" />
-        <div className="relative mx-auto max-w-6xl px-4 pb-10 pt-16 sm:px-6 sm:pt-20">
-          <Reveal>
-            <Badge variant="brand" className="font-mono">{dict.work.eyebrow}</Badge>
-          </Reveal>
-          <h1 className="mt-4 max-w-2xl text-4xl font-semibold tracking-tight text-balance sm:text-5xl">{dict.work.title}</h1>
-          <p className="mt-4 max-w-2xl leading-relaxed text-muted-foreground">{dict.work.body}</p>
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-6xl px-4 pb-20 sm:px-6">
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {projects.map((p, i) => (
-            <Reveal key={p.slug} delay={(i % 3) * 80} className="relative">
-              <ProjectCard locale={locale} dict={dict} project={p} />
-            </Reveal>
-          ))}
-        </div>
-      </section>
-
-      <CTA locale={locale} dict={dict} />
-    </>
+    <PageTransition>
+      <div>
+        <PageIntro
+          locale={locale}
+          homeLabel={dict.breadcrumbs.home}
+          crumbs={[{ name: dict.nav.work, path: "/work" }]}
+          meta={`${String(projects.length).padStart(2, "0")} ${t.caseLabel}`}
+          title={t.title}
+          body={t.body}
+        />
+        <Container className="pb-24 sm:pb-32">
+          <WorkFilter
+            allLabel={t.filterAll}
+            label={t.filterLabel}
+            categories={categories}
+            items={projects.map((p) => ({
+              key: p.slug,
+              category: tl(locale, p.category),
+              node: <ProjectCard project={p} locale={locale} dict={dict} />,
+            }))}
+          />
+        </Container>
+        <CTA locale={locale} dict={dict} />
+        {published.length > 0 ? (
+          <JsonLdScript data={itemListJsonLd(locale, published.map((p) => ({ name: tl(locale, p.title), path: `/work/${p.slug}` })))} />
+        ) : null}
+      </div>
+    </PageTransition>
   );
 }

@@ -1,26 +1,20 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { Mail, MessageCircle, ArrowUpRight, MapPin, Clock } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Reveal } from "@/components/ui/reveal";
 import { ContactForm } from "@/components/contact/contact-form";
-import { siteConfig } from "@/lib/site";
+import { PageIntro } from "@/components/layout/page-intro";
+import { PageTransition } from "@/components/layout/page-transition";
+import { Arrow } from "@/components/ui/arrow";
+import { Container } from "@/components/ui/section";
 import { isLocale, type SiteLocale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
 import { localizedMetadata } from "@/lib/seo";
+import { siteConfig } from "@/lib/site";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
   const loc: SiteLocale = isLocale(locale) ? locale : "en";
-  return localizedMetadata({
-    locale: loc,
-    title: loc === "ar" ? "تواصل معنا — تايتنز سوفت" : "Contact — Titans.Soft",
-    description:
-      loc === "ar"
-        ? "أخبرنا بما تبنيه — سنساعدك على تحويل الفكرة إلى منتج حقيقي."
-        : "Tell us what you're building — we'll help turn it into a real product.",
-    path: "/contact",
-  });
+  const dict = await getDictionary(loc);
+  return localizedMetadata({ locale: loc, title: dict.seo.contact.title, description: dict.seo.contact.description, path: "/contact" });
 }
 
 export default async function ContactPage({ params }: { params: Promise<{ locale: string }> }) {
@@ -31,56 +25,65 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
   const c = siteConfig.contact;
 
   const channels = [
-    { icon: Mail, label: t.direct.email, value: c.email, href: `mailto:${c.email}`, ltr: true },
-    { icon: MessageCircle, label: t.direct.whatsapp, value: "WhatsApp", href: c.whatsapp, ltr: false },
-    { icon: ArrowUpRight, label: t.direct.linkedin, value: "LinkedIn", href: c.linkedin, ltr: false },
-    { icon: MapPin, label: t.direct.location, value: locale === "ar" ? c.location.ar : c.location.en, href: undefined, ltr: false },
+    { label: t.direct.email, value: c.email, href: `mailto:${c.email}`, ltr: true },
+    { label: t.direct.whatsapp, value: c.phoneDisplay, href: c.whatsapp, ltr: true, external: true },
+    { label: t.direct.linkedin, value: "Titans.Soft", href: c.linkedin, external: true },
   ];
 
   return (
-    <section className="relative overflow-hidden">
-      <div className="bg-grid bg-grid-fade absolute inset-0" aria-hidden="true" />
-      <div className="relative mx-auto max-w-6xl px-4 pb-20 pt-16 sm:px-6 sm:pt-20">
-        <Reveal>
-          <Badge variant="brand" className="font-mono">{t.eyebrow}</Badge>
-        </Reveal>
-        <h1 className="mt-4 max-w-2xl text-4xl font-semibold tracking-tight text-balance sm:text-5xl">{t.title}</h1>
-        <p className="mt-4 max-w-2xl leading-relaxed text-muted-foreground">{t.body}</p>
+    <PageTransition>
+      <div>
+        <PageIntro
+          locale={locale}
+          homeLabel={dict.breadcrumbs.home}
+          crumbs={[{ name: dict.nav.contact, path: "/contact" }]}
+          meta={c.location[locale]}
+          title={t.title}
+          body={t.body}
+        />
 
-        <div className="mt-10 grid gap-6 lg:grid-cols-[1.3fr_0.7fr]">
-          <Reveal>
+        <Container className="pb-24 sm:pb-32">
+          {/* Quick channels first: many visitors just want an address. */}
+          <ul className="grid border-t border-rule-strong md:grid-cols-3">
+            {channels.map((ch) => (
+              <li key={ch.label} className="border-b border-rule md:border-e md:last:border-e-0 md:[&:not(:first-child)]:ps-6">
+                <a
+                  href={ch.href}
+                  {...(ch.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                  className="group flex items-end justify-between gap-4 py-6 pe-6"
+                >
+                  <span>
+                    <span className="label block text-muted">{ch.label}</span>
+                    <span className="heading mt-2 block text-xl sm:text-2xl" dir={ch.ltr ? "ltr" : undefined}>
+                      {ch.value}
+                    </span>
+                  </span>
+                  <Arrow diagonal className="mb-1.5 size-5 transition-transform duration-300 group-hover:-translate-y-1 group-hover:translate-x-1 rtl:group-hover:-translate-x-1" />
+                </a>
+              </li>
+            ))}
+          </ul>
+          <p className="label mt-4 text-muted">{t.direct.response}</p>
+
+          <div className="mt-20">
             <ContactForm locale={locale} dict={dict} />
-          </Reveal>
-          <Reveal delay={120}>
-            <aside className="h-fit rounded-lg border border-border bg-card p-6" aria-label={t.direct.title}>
-              <h2 className="font-semibold tracking-tight">{t.direct.title}</h2>
-              <ul className="mt-4 space-y-3">
-                {channels.map((ch) => (
-                  <li key={ch.label} className="flex items-center gap-3 text-sm">
-                    <span className="grid size-9 shrink-0 place-items-center rounded-md border border-border bg-background">
-                      <ch.icon className="size-4 text-brand" aria-hidden="true" />
-                    </span>
-                    <span>
-                      <span className="block font-mono text-[11px] uppercase tracking-wider text-muted-foreground">{ch.label}</span>
-                      {ch.href ? (
-                        <a href={ch.href} target={ch.href.startsWith("http") ? "_blank" : undefined} rel={ch.href.startsWith("http") ? "noreferrer" : undefined} dir={ch.ltr ? "ltr" : undefined} className="font-medium hover:text-brand hover:underline">
-                          {ch.value}
-                        </a>
-                      ) : (
-                        <span className="font-medium">{ch.value}</span>
-                      )}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-              <p className="mt-5 flex items-start gap-2 border-t border-border pt-4 text-xs leading-relaxed text-muted-foreground">
-                <Clock className="mt-0.5 size-3.5 shrink-0" aria-hidden="true" />
-                {t.direct.response}
-              </p>
-            </aside>
-          </Reveal>
-        </div>
+          </div>
+
+          <section aria-labelledby="next-title" className="mt-20 grid gap-6 border-t border-rule-strong pt-6 lg:grid-cols-12 lg:gap-8">
+            <h2 id="next-title" className="label text-muted lg:col-span-3">
+              <span className="text-ink">(03)</span> {t.nextStepsTitle}
+            </h2>
+            <ol className="grid gap-8 sm:grid-cols-3 lg:col-span-9">
+              {t.nextSteps.map((step, i) => (
+                <li key={step}>
+                  <span className="display text-5xl text-accent-ink">{i + 1}</span>
+                  <p className="mt-3 text-ink-soft">{step}</p>
+                </li>
+              ))}
+            </ol>
+          </section>
+        </Container>
       </div>
-    </section>
+    </PageTransition>
   );
 }

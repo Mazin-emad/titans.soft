@@ -2,14 +2,11 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Languages } from "lucide-react";
-import { locales, type SiteLocale } from "@/lib/i18n/config";
-import type { Dictionary } from "@/dictionaries/en";
+import type { SiteLocale } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
 function swapLocale(pathname: string, next: SiteLocale): string {
   const segments = pathname.split("/");
-  // pathname like /en/work/x or /ar — first segment is "" then locale
   if (segments.length > 1 && (segments[1] === "en" || segments[1] === "ar")) {
     segments[1] = next;
     return segments.join("/") || "/";
@@ -17,22 +14,24 @@ function swapLocale(pathname: string, next: SiteLocale): string {
   return `/${next}`;
 }
 
-export function LanguageSwitcher({ locale, labels }: { locale: SiteLocale; labels: Dictionary["nav"] }) {
+/** Shows the *other* language in its own script, so a reader of either can find it. */
+export function LanguageSwitcher({ locale, label, className }: { locale: SiteLocale; label: string; className?: string }) {
   const pathname = usePathname();
-  const other = locales.find((l) => l !== locale) ?? "en";
-
+  const other: SiteLocale = locale === "ar" ? "en" : "ar";
   return (
     <Link
       href={swapLocale(pathname, other)}
       hrefLang={other}
-      aria-label={labels.language}
+      lang={other}
+      aria-label={label}
+      title={label}
       className={cn(
-        "inline-flex h-9 items-center gap-2 rounded-md border border-border bg-background px-3 text-sm text-muted-foreground",
-        "transition-colors hover:bg-accent hover:text-foreground"
+        "inline-flex h-9 items-center rounded-full px-3 text-[15px] font-semibold text-ink transition-colors hover:bg-ink/5",
+        other === "ar" ? "font-[family-name:var(--font-plex-arabic)]" : "font-[family-name:var(--font-instrument)]",
+        className,
       )}
     >
-      <Languages className="size-4" aria-hidden="true" />
-      <span className="font-medium">{other === "ar" ? "العربية" : "EN"}</span>
+      {other === "ar" ? "العربية" : "English"}
     </Link>
   );
 }

@@ -1,39 +1,45 @@
 import Link from "next/link";
-import { ArrowUpRight } from "lucide-react";
+import { Arrow } from "@/components/ui/arrow";
 import { Button } from "@/components/ui/button";
-import { Reveal } from "@/components/ui/reveal";
+import { Container } from "@/components/ui/section";
 import type { Dictionary } from "@/dictionaries/en";
-import type { SiteLocale } from "@/lib/site";
+import { siteConfig, type SiteLocale } from "@/lib/site";
 
+/** Full-bleed saffron block — the one place the accent takes over the whole width. */
 export function CTA({ locale, dict }: { locale: SiteLocale; dict: Dictionary }) {
   const t = dict.cta;
   return (
-    <section className="border-t border-border">
-      <div className="relative overflow-hidden">
-        <div className="bg-grid bg-grid-fade absolute inset-0" aria-hidden="true" />
-        <div className="absolute inset-x-0 top-1/2 h-64 -translate-y-1/2 bg-[radial-gradient(ellipse_50%_60%_at_50%_50%,var(--glow),transparent)]" aria-hidden="true" />
-        <div className="relative mx-auto max-w-3xl px-4 py-20 text-center sm:px-6 sm:py-28">
-          <Reveal>
-            <h2 className="text-3xl font-semibold tracking-tight text-balance sm:text-5xl">
-              {t.titleA}
-              <br />
-              <span className="text-brand">{t.titleB}</span>
-            </h2>
-            <p className="mx-auto mt-5 max-w-xl leading-relaxed text-muted-foreground">{t.body}</p>
-            <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-              <Button asChild size="lg" variant="brand">
-                <Link href={`/${locale}/contact`}>
-                  {t.primary}
-                  <ArrowUpRight className="size-4 rtl:rotate-180" aria-hidden="true" />
-                </Link>
-              </Button>
-              <Button asChild size="lg" variant="outline">
-                <Link href={`/${locale}/contact`}>{t.secondary}</Link>
-              </Button>
-            </div>
-          </Reveal>
+    <section aria-labelledby="cta-title" className="bg-accent text-on-accent">
+      <Container className="py-20 sm:py-28">
+        <p className="label flex items-center justify-between border-b border-on-accent pb-3">
+          <span>{t.eyebrow}</span>
+          <span>{siteConfig.contact.location[locale]}</span>
+        </p>
+        <h2 id="cta-title" className="display mt-10 max-w-[14ch] text-[clamp(2.75rem,8vw,8rem)]">
+          {t.titleA} <span className="block">{t.titleB}</span>
+        </h2>
+        <div className="mt-12 flex flex-col gap-10 border-t border-on-accent/30 pt-8 md:flex-row md:items-end md:justify-between">
+          <div className="flex flex-col gap-3 sm:flex-row">
+            <Button asChild size="lg" className="bg-on-accent text-accent hover:bg-paper hover:text-on-accent">
+              <Link href={`/${locale}/contact`}>
+                {t.primary}
+                <Arrow />
+              </Link>
+            </Button>
+            <Button asChild size="lg" variant="outline" className="border-on-accent text-on-accent hover:bg-on-accent hover:text-accent">
+              <a href={siteConfig.contact.whatsapp} target="_blank" rel="noopener noreferrer">
+                {t.secondary}
+              </a>
+            </Button>
+          </div>
+          <div>
+            <p className="label">{t.emailLabel}</p>
+            <a href={`mailto:${siteConfig.contact.email}`} dir="ltr" className="heading mt-2 inline-block text-2xl underline decoration-1 underline-offset-[6px] hover:decoration-2 sm:text-3xl">
+              {siteConfig.contact.email}
+            </a>
+          </div>
         </div>
-      </div>
+      </Container>
     </section>
   );
 }

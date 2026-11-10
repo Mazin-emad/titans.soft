@@ -2,46 +2,43 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ArrowUpRight, Home } from "lucide-react";
+import { Arrow } from "@/components/ui/arrow";
 import { Button } from "@/components/ui/button";
-import en from "@/dictionaries/en";
+import { Container } from "@/components/ui/section";
 import ar from "@/dictionaries/ar";
+import en from "@/dictionaries/en";
 import { isLocale } from "@/lib/i18n/config";
 
-/**
- * The not-found boundary does not receive route params, so the locale is
- * derived from the URL prefix instead. Defaults to English.
- */
+/** The not-found boundary doesn't receive params, so the locale comes from the URL. */
 export default function LocaleNotFound() {
   const pathname = usePathname();
   const segment = pathname.split("/")[1];
   const locale = isLocale(segment) ? segment : "en";
-  const dict = locale === "ar" ? ar : en;
-  const t = dict.errors;
+  const t = (locale === "ar" ? ar : en).errors;
 
   return (
-    <div className="relative overflow-hidden">
-      <div className="bg-grid bg-grid-fade absolute inset-0" aria-hidden="true" />
-      <div className="relative mx-auto max-w-xl px-4 py-28 text-center sm:px-6">
-        <p className="font-mono text-sm text-brand" aria-hidden="true">{t.notFoundEyebrow}</p>
-        <p className="mt-2 font-mono text-7xl font-bold tracking-tighter text-foreground/15" aria-hidden="true">404</p>
-        <h1 className="mt-4 text-3xl font-semibold tracking-tight">{t.notFoundTitle}</h1>
-        <p className="mt-3 leading-relaxed text-muted-foreground">{t.notFoundBody}</p>
-        <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-          <Button variant="brand" asChild>
-            <Link href={`/${locale}`}>
-              <Home className="size-4" aria-hidden="true" />
-              {t.notFoundHome}
-            </Link>
-          </Button>
-          <Button variant="outline" asChild>
-            <Link href={`/${locale}/work`}>
-              {t.notFoundWork}
-              <ArrowUpRight className="size-4 rtl:rotate-180" aria-hidden="true" />
-            </Link>
-          </Button>
+    <Container className="pb-28 pt-24 sm:pt-28">
+      <p className="label border-b border-rule-strong pb-3 text-muted">Error 404</p>
+      <p className="display mt-10 text-[clamp(7rem,26vw,22rem)] leading-[0.8]" aria-hidden="true" dir="ltr">
+        4<span className="text-accent">0</span>4
+      </p>
+      <div className="mt-10 grid gap-8 lg:grid-cols-12">
+        <div className="lg:col-span-7 lg:col-start-4">
+          <h1 className="display-md text-4xl">{t.notFoundTitle}</h1>
+          <p className="mt-4 text-lg text-ink-soft">{t.notFoundBody}</p>
+          <div className="mt-9 flex flex-col gap-3 sm:flex-row">
+            <Button asChild size="lg">
+              <Link href={`/${locale}`}>
+                {t.notFoundHome}
+                <Arrow />
+              </Link>
+            </Button>
+            <Button asChild size="lg" variant="outline">
+              <Link href={`/${locale}/work`}>{t.notFoundWork}</Link>
+            </Button>
+          </div>
         </div>
       </div>
-    </div>
+    </Container>
   );
 }

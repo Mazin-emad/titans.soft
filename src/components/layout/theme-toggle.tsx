@@ -1,43 +1,22 @@
 "use client";
 
 import { useTheme } from "@/components/providers";
-import { useEffect, useState } from "react";
-import { Moon, Sun, Monitor } from "lucide-react";
-import type { Dictionary } from "@/dictionaries/en";
 
-export function ThemeToggle({ labels }: { labels: Dictionary["nav"] }) {
-  const { theme, setTheme, resolvedTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    const id = requestAnimationFrame(() => setMounted(true));
-    return () => cancelAnimationFrame(id);
-  }, []);
-
-  const cycle = () => {
-    const current = theme ?? resolvedTheme ?? "dark";
-    if (current === "dark") setTheme("light");
-    else if (current === "light") setTheme("system");
-    else setTheme("dark");
-  };
-
+/** Paper ⇄ ink toggle. The glyph is a half-filled circle that rotates; state is pure CSS (.dark). */
+export function ThemeToggle({ label }: { label: string }) {
+  const { setTheme } = useTheme();
   return (
     <button
       type="button"
-      onClick={cycle}
-      aria-label={labels.themeToggle}
-      title={labels.themeToggle}
-      className="inline-flex size-9 items-center justify-center rounded-md border border-border bg-background text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+      onClick={() => setTheme(document.documentElement.classList.contains("dark") ? "light" : "dark")}
+      aria-label={label}
+      title={label}
+      className="grid size-9 place-items-center rounded-full text-ink transition-colors hover:bg-ink/5"
     >
-      {!mounted ? (
-        <Sun className="size-4" aria-hidden="true" />
-      ) : (theme ?? resolvedTheme) === "dark" ? (
-        <Moon className="size-4" aria-hidden="true" />
-      ) : (theme ?? resolvedTheme) === "light" ? (
-        <Sun className="size-4" aria-hidden="true" />
-      ) : (
-        <Monitor className="size-4" aria-hidden="true" />
-      )}
+      <svg viewBox="0 0 20 20" className="size-[18px] transition-transform duration-500 ease-out-expo dark:rotate-180" aria-hidden="true">
+        <circle cx="10" cy="10" r="7.25" fill="none" stroke="currentColor" strokeWidth="1.5" />
+        <path d="M10 2.75a7.25 7.25 0 0 1 0 14.5z" fill="currentColor" />
+      </svg>
     </button>
   );
 }

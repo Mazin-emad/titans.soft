@@ -4,7 +4,12 @@ import { sendContactMessage } from "@/lib/contact";
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { name, email, message, projectType, company, phone, country, budget, locale } = body ?? {};
+    const { name, email, message, projectType, company, phone, country, budget, locale, website } = body ?? {};
+
+    // Honeypot filled → silently accept and drop (don't tell bots they were caught).
+    if (typeof website === "string" && website.trim() !== "") {
+      return NextResponse.json({ ok: true });
+    }
 
     if (typeof name !== "string" || name.trim().length < 2) {
       return NextResponse.json({ error: "Invalid name" }, { status: 400 });

@@ -45,7 +45,7 @@ export const techGroups: TechGroup[] = [
     title: { en: "Databases", ar: "قواعد البيانات" },
     items: [
       { name: "PostgreSQL", note: { en: "Primary relational store", ar: "التخزين العلائقي الأساسي" } },
-      { name: "SQL Server", note: { en: "Enterprise & .NET estates", ar: "بيئات المؤسسات و.NET" } },
+      { name: "SQL Server", note: { en: "Enterprise & .NET estates", ar: "بيئات المؤسسات و .NET" } },
       { name: "MongoDB", note: { en: "Flexible document workloads", ar: "أحمال مستندات مرنة" } },
     ],
   },

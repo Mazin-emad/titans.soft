@@ -1,45 +1,39 @@
-"use client";
-
 import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
+/**
+ * Rectangular, confident buttons. Hover flips the fill (ink ⇄ saffron) rather than
+ * adding glows or shadows; the arrow nudges toward the reading direction.
+ */
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0 cursor-pointer",
+  "group/btn relative inline-flex select-none items-center justify-center gap-3 whitespace-nowrap rounded-[4px] font-medium transition-[background-color,color,border-color] duration-300 ease-out cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:size-[1.05em] [&_svg]:shrink-0 [&_svg]:transition-transform [&_svg]:duration-300 hover:[&_svg.arrow]:translate-x-[3px] rtl:hover:[&_svg.arrow]:-translate-x-[3px]",
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/85",
-        brand: "bg-brand text-white hover:brightness-110 dark:text-black",
-        secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/70 border border-border",
-        outline: "border border-border bg-transparent hover:bg-accent hover:text-accent-foreground",
-        ghost: "hover:bg-accent hover:text-accent-foreground",
-        link: "text-brand underline-offset-4 hover:underline",
+        primary: "bg-ink text-paper hover:bg-accent hover:text-on-accent",
+        accent: "bg-accent text-on-accent hover:bg-ink hover:text-paper",
+        outline: "border border-ink/80 text-ink hover:bg-ink hover:text-paper",
+        ghost: "text-ink hover:bg-ink/5",
       },
       size: {
-        default: "h-9 px-4 py-2",
-        sm: "h-8 rounded-md px-3 text-xs",
-        lg: "h-11 rounded-md px-7 text-[15px]",
-        icon: "h-9 w-9",
+        sm: "h-9 px-4 text-sm",
+        md: "h-11 px-5 text-[15px]",
+        lg: "h-14 px-7 text-base",
       },
     },
-    defaultVariants: { variant: "default", size: "default" },
-  }
+    defaultVariants: { variant: "primary", size: "md" },
+  },
 );
 
-export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {
+export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof buttonVariants> {
   asChild?: boolean;
 }
 
-const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, ...props }, ref) => {
-    const Comp = asChild ? Slot : "button";
-    return <Comp className={cn(buttonVariants({ variant, size, className }))} ref={ref} {...props} />;
-  }
-);
-Button.displayName = "Button";
+function Button({ className, variant, size, asChild = false, ...props }: ButtonProps) {
+  const Comp = asChild ? Slot : "button";
+  return <Comp className={cn(buttonVariants({ variant, size, className }))} {...props} />;
+}
 
 export { Button, buttonVariants };
