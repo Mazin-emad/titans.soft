@@ -68,8 +68,13 @@ export function Footer({ locale, dict }: { locale: SiteLocale; dict: Dictionary 
                 </a>
               </li>
               <li>
-                <a href={c.whatsapp} target="_blank" rel="noopener noreferrer" className="link" dir="ltr">
+                <a href={c.phoneHref} className="link" dir="ltr">
                   {c.phoneDisplay}
+                </a>
+              </li>
+              <li>
+                <a href={c.whatsapp} target="_blank" rel="noopener noreferrer" className="link" dir="ltr">
+                  WhatsApp
                 </a>
               </li>
               <li className="text-[#a39e92]">{c.location[locale]}</li>

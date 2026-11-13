@@ -56,12 +56,12 @@
 /* Typefaces (variables attached to <html> by next/font). Each language gets
    its own display + text face; the other script falls back gracefully. */
 :root {
-  --ff-display: var(--font-archivo), var(--font-kufi), ui-sans-serif, system-ui, sans-serif;
+  --ff-display: var(--font-archivo), var(--font-cairo), ui-sans-serif, system-ui, sans-serif;
   --ff-body: var(--font-instrument), var(--font-plex-arabic), ui-sans-serif, system-ui, sans-serif;
   --ff-mono: var(--font-plex-mono), var(--font-plex-arabic), ui-monospace, monospace;
 }
 html[lang="ar"] {
-  --ff-display: var(--font-kufi), var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+  --ff-display: var(--font-cairo), var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
   --ff-body: var(--font-plex-arabic), var(--font-instrument), ui-sans-serif, system-ui, sans-serif;
   --ff-mono: var(--font-plex-arabic), var(--font-plex-mono), ui-monospace, monospace;
 }
@@ -136,7 +136,7 @@ body::after {
 p { text-wrap: pretty; }
 h1, h2, h3, h4 { text-wrap: balance; }
 
-/* Display type — Archivo pushed wide and heavy; Kufi in Arabic. */
+/* Display type — Archivo pushed wide and heavy; Cairo in Arabic. */
 .display {
   font-family: var(--ff-display);
   font-weight: 800;

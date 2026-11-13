@@ -220,6 +220,7 @@ const en = {
     direct: {
       title: "Direct channels",
       email: "Email",
+      phone: "Phone",
       whatsapp: "WhatsApp",
       linkedin: "LinkedIn",
       location: "Location",

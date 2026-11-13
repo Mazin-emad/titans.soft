@@ -19,14 +19,14 @@ export const siteConfig = {
   locales: ["en", "ar"] as const,
   contact: {
     /**
-     * TODO(owner): replace with real channels. While `verified` is false the phone
-     * number is kept out of structured data so Google never indexes a placeholder.
+     * Real, published channels. `verified` gates the phone number in structured
+     * data, so Google only ever indexes a number we actually answer.
      */
-    verified: false,
-    email: "hello@titans-soft.com",
-    phoneDisplay: "+20 100 000 0000",
-    phoneHref: "tel:+201000000000",
-    whatsapp: "https://wa.me/201000000000",
+    verified: true,
+    email: "titans.soft25@gmail.com",
+    phoneDisplay: "+20 112 814 1970",
+    phoneHref: "tel:+201128141970",
+    whatsapp: "https://wa.me/201128141970",
     linkedin: "https://www.linkedin.com/company/titans-soft",
     github: "https://github.com/titans-soft",
     location: {

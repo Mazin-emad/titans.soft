@@ -26,6 +26,7 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
 
   const channels = [
     { label: t.direct.email, value: c.email, href: `mailto:${c.email}`, ltr: true },
+    { label: t.direct.phone, value: c.phoneDisplay, href: c.phoneHref, ltr: true },
     { label: t.direct.whatsapp, value: c.phoneDisplay, href: c.whatsapp, ltr: true, external: true },
     { label: t.direct.linkedin, value: "Titans.Soft", href: c.linkedin, external: true },
   ];
@@ -44,9 +45,12 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
 
         <Container className="pb-24 sm:pb-32">
           {/* Quick channels first: many visitors just want an address. */}
-          <ul className="grid border-t border-rule-strong md:grid-cols-3">
+          <ul className="grid border-t border-rule-strong md:grid-cols-2 xl:grid-cols-4">
             {channels.map((ch) => (
-              <li key={ch.label} className="border-b border-rule md:border-e md:last:border-e-0 md:[&:not(:first-child)]:ps-6">
+              <li
+                key={ch.label}
+                className="border-b border-rule md:[&:nth-child(2n)]:border-e md:[&:nth-child(2n+1)]:border-e-0 xl:[&:nth-child(n)]:border-e xl:[&:last-child]:border-e-0 md:[&:nth-child(2n)]:ps-6 md:[&:nth-child(2n+1)]:ps-0 xl:[&:nth-child(n)]:ps-6 xl:[&:first-child]:ps-0"
+              >
                 <a
                   href={ch.href}
                   {...(ch.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}

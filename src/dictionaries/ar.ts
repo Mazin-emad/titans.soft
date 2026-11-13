@@ -222,6 +222,7 @@ const ar: Dictionary = {
     direct: {
       title: "قنوات التواصل المباشر",
       email: "البريد الإلكتروني",
+      phone: "الهاتف",
       whatsapp: "واتساب",
       linkedin: "لينكدإن",
       location: "الموقع",
