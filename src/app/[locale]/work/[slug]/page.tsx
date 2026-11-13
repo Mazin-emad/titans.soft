@@ -17,6 +17,7 @@ import { tl } from "@/lib/i18n/t";
 import { JsonLdScript, caseStudyJsonLd } from "@/lib/jsonld";
 import { localizedMetadata } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
+import { cn } from "@/lib/utils";
 
 export function generateStaticParams() {
   return siteConfig.locales.flatMap((locale) => projects.map((p) => ({ locale, slug: p.slug })));
@@ -35,8 +36,6 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
     description: tl(loc, p.tagline),
     path: `/work/${slug}`,
     type: "article",
-    // Sample case studies stay out of Google until real client work replaces them.
-    noindex: p.placeholder,
   });
 }
 
@@ -64,7 +63,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ loca
   const next = projects[num % projects.length];
 
   const meta = [
-    p.client ? { k: t.client, v: p.client } : null,
+    p.client ? { k: t.client, v: tl(locale, p.client) } : null,
     { k: t.industry, v: tl(locale, p.industry) },
     { k: t.platform, v: p.platform },
     { k: t.year, v: p.year },
@@ -92,7 +91,6 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ loca
               />
               <span className="label hidden text-muted sm:block">
                 {t.caseLabel} {String(num).padStart(2, "0")}
-                {p.placeholder ? <span className="text-accent-ink"> — {t.sampleBadge}</span> : null}
               </span>
             </div>
             <h1 className="display mt-10 max-w-[16ch] text-[clamp(2.6rem,7.4vw,7.25rem)]">{title}</h1>
@@ -123,10 +121,6 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ loca
             ))}
           </dl>
 
-          {p.placeholder ? (
-            <p className="mt-6 border-s-[3px] border-accent ps-4 text-[15px] text-ink-soft">{t.sampleNote}</p>
-          ) : null}
-
           {p.metrics?.length ? (
             <dl className="mt-16 grid gap-x-8 border-t border-rule-strong sm:grid-cols-2 lg:grid-cols-4">
               {p.metrics.map((m) => (
@@ -149,22 +143,38 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ loca
             </Chapter>
             <Chapter n={chapter()} label={t.solution}>
               <p>{tl(locale, p.solution)}</p>
+              {p.highlights?.length ? (
+                <dl className="mt-12 grid gap-x-8 gap-y-10 sm:grid-cols-2">
+                  {p.highlights.map((h) => (
+                    <div key={tl(locale, h.title)} className="border-t border-rule pt-5">
+                      <dt className="heading text-lg text-ink">{tl(locale, h.title)}</dt>
+                      <dd className="mt-3 text-base leading-relaxed text-ink-soft">{tl(locale, h.body)}</dd>
+                    </div>
+                  ))}
+                </dl>
+              ) : null}
             </Chapter>
 
             {p.images && p.images.length > 1 ? (
               <Chapter n={chapter()} label={t.screens}>
                 <div className="grid gap-6 sm:grid-cols-2">
-                  {p.images.slice(1).map((img) => (
-                    <Image
-                      key={img.src}
-                      src={img.src}
-                      alt={tl(locale, img.alt)}
-                      width={img.width}
-                      height={img.height}
-                      sizes="(min-width: 1024px) 33vw, 90vw"
-                      className="h-auto w-full border border-rule"
-                    />
-                  ))}
+                  {p.images.slice(1).map((img) => {
+                    const portrait = img.height > img.width;
+                    return (
+                      <Image
+                        key={img.src}
+                        src={img.src}
+                        alt={tl(locale, img.alt)}
+                        width={img.width}
+                        height={img.height}
+                        sizes={portrait ? "(min-width: 640px) 300px, 70vw" : "(min-width: 1024px) 33vw, 90vw"}
+                        className={cn(
+                          "h-auto w-full border border-rule",
+                          portrait && "sm:col-span-2 sm:mx-auto sm:w-[300px]",
+                        )}
+                      />
+                    );
+                  })}
                 </div>
               </Chapter>
             ) : null}

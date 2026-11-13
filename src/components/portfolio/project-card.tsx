@@ -33,12 +33,6 @@ export function ProjectCard({ project, locale, dict }: { project: Project; local
             <span>{tl(locale, project.industry)}</span>
             <span aria-hidden="true">/</span>
             <span>{project.year}</span>
-            {project.placeholder ? (
-              <>
-                <span aria-hidden="true">/</span>
-                <span className="text-accent-ink">{dict.work.sampleBadge}</span>
-              </>
-            ) : null}
           </p>
         </div>
         <span className="mt-1 grid size-10 shrink-0 place-items-center rounded-full border border-ink/70 transition-[background-color,color] duration-300 group-hover:bg-ink group-hover:text-paper">

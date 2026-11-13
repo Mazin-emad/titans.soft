@@ -17,10 +17,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: "/services", priority: 0.9, freq: "monthly" },
     ...services.map((s) => ({ path: `/services/${s.slug}`, priority: 0.9, freq: "monthly" as const })),
     { path: "/work", priority: 0.8, freq: "weekly" },
-    // Sample case studies are noindex — keep them out of the sitemap too.
-    ...projects
-      .filter((p) => !p.placeholder)
-      .map((p) => ({ path: `/work/${p.slug}`, priority: 0.7, freq: "monthly" as const, updated: p.updated })),
+    ...projects.map((p) => ({ path: `/work/${p.slug}`, priority: 0.7, freq: "monthly" as const, updated: p.updated })),
     { path: "/solutions", priority: 0.7, freq: "monthly" },
     { path: "/about", priority: 0.6, freq: "monthly" },
     { path: "/contact", priority: 0.6, freq: "monthly" },

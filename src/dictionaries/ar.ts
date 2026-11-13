@@ -61,8 +61,6 @@ const ar: Dictionary = {
     caseLabel: "مشروع",
     filterAll: "الكل",
     filterLabel: "تصفية المشاريع حسب الفئة",
-    sampleBadge: "نموذج",
-    sampleNote: "دراسة حالة نموذجية توضّح طريقة عرضنا — تتم إضافة أعمال العملاء الحقيقية.",
     backToWork: "كل الأعمال",
     overview: "نظرة عامة",
     challenge: "التحدي",

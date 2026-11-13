@@ -40,8 +40,8 @@ function relatedProjects(slug: string) {
     "web-development": (p) => p.platform.includes("Web"),
     "mobile-app-development": (p) => p.platform.includes("Mobile"),
     "desktop-software-development": (p) => p.platform === "Desktop",
-    "custom-software-development": (p) => ["HR Management", "SaaS", "Healthcare"].includes(p.category.en),
-    "api-backend-development": (p) => p.technologies.some((t) => [".NET", "Node.js"].includes(t)),
+    "custom-software-development": (p) => ["E-commerce", "EdTech", "ERP / Business Systems", "Healthcare"].includes(p.category.en),
+    "api-backend-development": (p) => p.technologies.some((t) => t.includes(".NET") || t.includes("Node.js")),
     "ai-automation": (p) => p.platform === "AI Feature",
   };
   return projects.filter(match[slug] ?? (() => false)).slice(0, 2);

@@ -59,8 +59,6 @@ const en = {
     caseLabel: "Case",
     filterAll: "All",
     filterLabel: "Filter projects by category",
-    sampleBadge: "Sample",
-    sampleNote: "Sample case study showing our format — real client work is being added.",
     backToWork: "All work",
     overview: "Overview",
     challenge: "The challenge",

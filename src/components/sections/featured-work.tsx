@@ -46,7 +46,6 @@ export function FeaturedWork({ locale, dict, index = "02" }: { locale: SiteLocal
               <div className="lg:col-span-5">
                 <p className="label text-muted">
                   {t.caseLabel} {String(projectNumber(p)).padStart(2, "0")}
-                  {p.placeholder ? <span className="text-accent-ink"> — {t.sampleBadge}</span> : null}
                 </p>
                 <h3 className="display-md mt-4 text-[clamp(2rem,3.6vw,3.25rem)]">{tl(locale, p.title)}</h3>
                 <p className="mt-4 text-lg text-ink-soft">{tl(locale, p.tagline)}</p>

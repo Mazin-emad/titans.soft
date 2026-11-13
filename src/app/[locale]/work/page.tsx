@@ -26,7 +26,6 @@ export default async function WorkPage({ params }: { params: Promise<{ locale: s
   const dict = await getDictionary(locale);
   const t = dict.work;
   const categories = [...new Set(projects.map((p) => tl(locale, p.category)))];
-  const published = projects.filter((p) => !p.placeholder);
 
   return (
     <PageTransition>
@@ -52,8 +51,8 @@ export default async function WorkPage({ params }: { params: Promise<{ locale: s
           />
         </Container>
         <CTA locale={locale} dict={dict} />
-        {published.length > 0 ? (
-          <JsonLdScript data={itemListJsonLd(locale, published.map((p) => ({ name: tl(locale, p.title), path: `/work/${p.slug}` })))} />
+        {projects.length > 0 ? (
+          <JsonLdScript data={itemListJsonLd(locale, projects.map((p) => ({ name: tl(locale, p.title), path: `/work/${p.slug}` })))} />
         ) : null}
       </div>
     </PageTransition>
