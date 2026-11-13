@@ -49,7 +49,7 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
             {channels.map((ch) => (
               <li
                 key={ch.label}
-                className="border-b border-rule md:[&:nth-child(2n)]:border-e md:[&:nth-child(2n+1)]:border-e-0 xl:[&:nth-child(n)]:border-e xl:[&:last-child]:border-e-0 md:[&:nth-child(2n)]:ps-6 md:[&:nth-child(2n+1)]:ps-0 xl:[&:nth-child(n)]:ps-6 xl:[&:first-child]:ps-0"
+                className="border-b border-rule md:max-xl:[&:nth-child(2n)]:border-e md:max-xl:[&:nth-child(2n)]:ps-6 md:max-xl:[&:nth-child(2n+1)]:border-e-0 md:max-xl:[&:nth-child(2n+1)]:ps-0 xl:[&:not(:last-child)]:border-e xl:[&:not(:first-child)]:ps-6"
               >
                 <a
                   href={ch.href}
