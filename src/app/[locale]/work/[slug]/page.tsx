@@ -106,7 +106,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ loca
             caption={tl(locale, p.category)}
             caseLabel={t.caseLabel}
             index={num}
-            priority
+            preload
             captionDir={locale === "ar" ? "rtl" : "ltr"}
             wide
             className="aspect-[16/10] sm:aspect-[16/8]"

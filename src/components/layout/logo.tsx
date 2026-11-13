@@ -25,11 +25,11 @@ export function Logo({
     >
       <span className="relative block h-[26px] w-[30px] transition-transform duration-500 ease-out-expo group-hover:-rotate-[8deg]">
         {inverted ? (
-          <Image src="/brand/mark-bone.png" alt="" width={30} height={26} priority className="size-full object-contain" />
+          <Image src="/brand/mark-bone.png" alt="" width={30} height={26} preload className="size-full object-contain" />
         ) : (
           <>
-            <Image src="/brand/mark-ink.png" alt="" width={30} height={26} priority className="size-full object-contain dark:hidden" />
-            <Image src="/brand/mark-bone.png" alt="" width={30} height={26} priority className="hidden size-full object-contain dark:block" />
+            <Image src="/brand/mark-ink.png" alt="" width={30} height={26} preload className="size-full object-contain dark:hidden" />
+            <Image src="/brand/mark-bone.png" alt="" width={30} height={26} preload className="hidden size-full object-contain dark:block" />
           </>
         )}
       </span>

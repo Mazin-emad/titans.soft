@@ -62,7 +62,7 @@ export function ProjectCover({
   caseLabel,
   index,
   className,
-  priority = false,
+  preload = false,
   captionDir,
   wide = false,
 }: {
@@ -72,7 +72,7 @@ export function ProjectCover({
   caseLabel: string;
   index: number;
   className?: string;
-  priority?: boolean;
+  preload?: boolean;
   captionDir?: "ltr" | "rtl";
   /** Wide banner covers (case-study header) scale the object down to fit the shorter height. */
   wide?: boolean;
@@ -102,7 +102,7 @@ export function ProjectCover({
               src={shot.src}
               alt=""
               fill
-              priority={priority}
+              preload={preload}
               sizes="(min-width: 1024px) 50vw, 100vw"
               className="object-cover object-top transition-transform duration-700 ease-out-expo group-hover:scale-[1.03]"
             />
