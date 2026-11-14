@@ -29,7 +29,7 @@ export function PageIntro({
           <Breadcrumbs locale={locale} homeLabel={homeLabel} items={crumbs} />
           {meta ? <span className="label hidden text-muted sm:block">{meta}</span> : null}
         </div>
-        <h1 className="display mt-10 max-w-[18ch] text-[clamp(2.6rem,7.4vw,7.25rem)]">{title}</h1>
+        <h1 className="display mt-10 max-w-[18ch] text-[clamp(2.6rem,7.4vw,6.5rem)] rtl:max-w-[17ch]">{title}</h1>
         {body || children ? (
           <div className="mt-10 grid gap-8 lg:grid-cols-12">
             <div className="lg:col-span-7 lg:col-start-4">

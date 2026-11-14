@@ -169,11 +169,14 @@ h1, h2, h3, h4 { text-wrap: balance; }
   line-height: 1.4;
 }
 
-/* Arabic: no tracking, no uppercase, roomier lines, slightly larger text. */
+/* Arabic: no tracking, no uppercase, roomier lines, slightly larger text.
+   Vazirmatn's real glyphs occupy ~114% of the em box (90% ascent + 24%
+   descent) against Cairo's ~95%, so the leading has to open up to keep
+   descenders clear of the next line's ascenders. */
 html[lang="ar"] body { font-size: 18px; line-height: 1.85; }
-html[lang="ar"] .display { letter-spacing: 0; line-height: 1.22; font-weight: 800; }
-html[lang="ar"] .display-md { letter-spacing: 0; line-height: 1.35; }
-html[lang="ar"] .heading { letter-spacing: 0; line-height: 1.5; }
+html[lang="ar"] .display { letter-spacing: 0; line-height: 1.32; font-weight: 800; }
+html[lang="ar"] .display-md { letter-spacing: 0; line-height: 1.45; }
+html[lang="ar"] .heading { letter-spacing: 0; line-height: 1.58; }
 html[lang="ar"] .label { letter-spacing: 0; text-transform: none; font-size: 13px; }
 html[lang="ar"] [class*="tracking-"] { letter-spacing: 0 !important; }
 

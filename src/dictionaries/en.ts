@@ -22,9 +22,9 @@ const en = {
   hero: {
     eyebrow: "Software development company",
     location: "Egypt · Saudi Arabia · MENA",
-    titleBefore: "We build custom software that",
-    titleMark: "runs",
-    titleAfter: "your business.",
+    titleBefore: "Software tailored to how",
+    titleMark: "your business",
+    titleAfter: "actually works.",
     subtitle:
       "Web platforms, mobile apps and business systems for companies across Egypt, Saudi Arabia and MENA — designed around how your team actually works, and built to last.",
     primaryCta: "Start your project",
