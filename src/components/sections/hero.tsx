@@ -19,7 +19,7 @@ export function Hero({ locale, dict }: { locale: SiteLocale; dict: Dictionary })
 
         <h1
           id="hero-title"
-          className="display mt-8 max-w-[15ch] text-[clamp(2.375rem,8.2vw,7.2rem)] sm:mt-10 rtl:max-w-[15ch]"
+          className="display mt-8 max-w-[15ch] text-[clamp(2.375rem,8.2vw,7.2rem)] sm:mt-10 rtl:max-w-[24ch] rtl:text-[clamp(2.375rem,6.8vw,6rem)]"
         >
           {t.titleBefore} <span className="mark">{t.titleMark}</span> {t.titleAfter}
         </h1>

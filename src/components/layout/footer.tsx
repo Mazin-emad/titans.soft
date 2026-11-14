@@ -106,9 +106,11 @@ export function Footer({ locale, dict }: { locale: SiteLocale; dict: Dictionary 
         </div>
       </Container>
 
-      {/* Extruded wordmark — decorative, cropped by the page edge on purpose. */}
+      {/* Extruded wordmark — decorative. Sized so the whole mark always fits the
+          viewport width; "TITANS.SOFT" measures 7.96em in Archivo Black at
+          wdth 118, so 11.2vw stays inside the 24px gutter down to 320px. */}
       <div aria-hidden="true" className="pointer-events-none select-none overflow-hidden" dir="ltr">
-        <p className="extrude -mb-[0.2em] whitespace-nowrap px-3 text-center font-[family-name:var(--font-archivo)] text-[16.5vw] leading-[0.85] font-black tracking-[-0.04em] text-[#f0ede6] [font-variation-settings:'wdth'_118]">
+        <p className="extrude -mb-[0.2em] whitespace-nowrap px-3 text-center font-[family-name:var(--font-archivo)] text-[11.2vw] leading-[0.85] font-black tracking-[-0.04em] text-[#f0ede6] [font-variation-settings:'wdth'_118]">
           TITANS.SOFT
         </p>
       </div>
