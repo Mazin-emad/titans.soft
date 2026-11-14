@@ -27,7 +27,7 @@ export function LanguageSwitcher({ locale, label, className }: { locale: SiteLoc
       title={label}
       className={cn(
         "inline-flex h-9 items-center rounded-full px-3 text-[15px] font-semibold text-ink transition-colors hover:bg-ink/5",
-        other === "ar" ? "font-[family-name:var(--font-plex-arabic)]" : "font-[family-name:var(--font-instrument)]",
+        other === "ar" ? "font-[family-name:var(--font-vazirmatn)]" : "font-[family-name:var(--font-instrument)]",
         className,
       )}
     >
